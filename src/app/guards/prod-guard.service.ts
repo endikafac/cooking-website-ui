@@ -15,7 +15,8 @@ export class ProdGuardService implements CanActivate {
   ) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    const expectedRol = route.data.expectedRol;
+    let dataAux = route.data;
+    const expectedRol = dataAux["expectedRol"];
     const roles = this.tokenService.getAuthorities();
     this.realRol = 'user';
     roles.forEach(rol => {

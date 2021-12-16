@@ -19,7 +19,9 @@ export class TokenService {
   }
 
   public getToken(): string {
-    return sessionStorage.getItem(TOKEN_KEY);
+    let tokenKey = sessionStorage.getItem(TOKEN_KEY);
+    return (tokenKey != null) ? tokenKey : "";
+    
   }
 
   public setUserName(userName: string): void {
@@ -28,7 +30,8 @@ export class TokenService {
   }
 
   public getUserName(): string {
-    return sessionStorage.getItem(USERNAME_KEY);
+    let usernameKey = sessionStorage.getItem(USERNAME_KEY);
+    return (usernameKey != null) ? usernameKey : "";
   }
 
   public setAuthorities(authorities: string[]): void {
@@ -39,7 +42,8 @@ export class TokenService {
   public getAuthorities(): string[] {
     this.roles = [];
     if (sessionStorage.getItem(AUTHORITIES_KEY)) {
-      JSON.parse(sessionStorage.getItem(AUTHORITIES_KEY)).forEach(authority => {
+      const authoritiesKey = sessionStorage.getItem(AUTHORITIES_KEY)
+      JSON.parse((authoritiesKey != null) ? authoritiesKey : "").forEach((authority: any) => {
         this.roles.push(authority.authority);
       });
     }

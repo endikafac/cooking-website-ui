@@ -11,7 +11,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class EditarProductoComponent implements OnInit {
 
-  producto: Producto = null;
+  producto: Producto = new Producto("",0);
 
   constructor(
     private productoService: ProductoService,
@@ -21,7 +21,8 @@ export class EditarProductoComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    const id = this.activatedRoute.snapshot.params.id;
+    let paramsAux = this.activatedRoute.snapshot.params;
+    const id = paramsAux["id"];
     this.productoService.detail(id).subscribe(
       data => {
         this.producto = data;
@@ -36,7 +37,8 @@ export class EditarProductoComponent implements OnInit {
   }
 
   onUpdate(): void {
-    const id = this.activatedRoute.snapshot.params.id;
+    let paramsAux = this.activatedRoute.snapshot.params;
+    const id = paramsAux["id"];
     this.productoService.update(id, this.producto).subscribe(
       data => {
         this.toastr.success('Producto Actualizado', 'OK', {
