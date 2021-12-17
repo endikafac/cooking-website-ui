@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../service/auth.service';
 import { Router } from '@angular/router';
-import { LoginUsuario } from '../models/login-usuario';
+import { LoginUser } from '../models/login-user';
 import { TokenService } from '../service/token.service';
 import { ToastrService } from 'ngx-toastr';
 
@@ -14,7 +14,7 @@ export class LoginComponent implements OnInit {
 
   isLogged = false;
   isLoginFail = false;
-  loginUsuario: LoginUsuario;
+  loginUser: LoginUser;
   username: string;
   password: string;
   roles: string[] = [];
@@ -36,8 +36,8 @@ export class LoginComponent implements OnInit {
   }
 
   onLogin(): void {
-    this.loginUsuario = new LoginUsuario(this.username, this.password);
-    this.authService.login(this.loginUsuario).subscribe(
+    this.loginUser = new LoginUser(this.username, this.password);
+    this.authService.login(this.loginUser).subscribe(
       data => {
         this.isLogged = true;
 
@@ -45,10 +45,10 @@ export class LoginComponent implements OnInit {
         this.tokenService.setUserName(data.username);
         this.tokenService.setAuthorities(data.authorities);
         this.roles = data.authorities;
-        this.toastr.success('Bienvenido ' + data.username, 'OK', {
+        this.toastr.success('Welcome ' + data.username, 'OK', {
           timeOut: 3000, positionClass: 'toast-top-center'
         });
-        this.router.navigate(['/']);
+        this.router.navigate(['/list']);
       },
       err => {
         this.isLogged = false;
