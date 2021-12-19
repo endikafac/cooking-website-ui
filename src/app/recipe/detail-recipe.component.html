@@ -1,19 +1,19 @@
 <app-menu></app-menu>
 <div class="container">
-  <div class="row mt-5" *ngIf="user">
+  <div class="row mt-5" *ngIf="newUser">
     <div class="col-md-4 mx-auto">
         <div class="card" style="width: 30rem;">
             <div class="card-header text-center">
               User detail
             </div>
             <ul class="list-group list-group-flush">
-              <li class="list-group-item"><b>Id: </b>{{user.id}}</li>
-              <li class="list-group-item"><b>Username: </b>{{user.username}}</li>
-              <li class="list-group-item"><b>Firstname: </b>{{user.firstname}}</li>
-              <li class="list-group-item"><b>Lastname: </b>{{user.lastname}}</li>
-              <li class="list-group-item"><b>Email: </b>{{user.email}}</li>
+              <li class="list-group-item"><b>Id: </b>{{newUser.id}}</li>
+              <li class="list-group-item"><b>Username: </b>{{newUser.username}}</li>
+              <li class="list-group-item"><b>Firstname: </b>{{newUser.firstname}}</li>
+              <li class="list-group-item"><b>Lastname: </b>{{newUser.lastname}}</li>
+              <li class="list-group-item"><b>Email: </b>{{newUser.email}}</li>
               <li class="list-group-item"><b>Roles: </b>
-                <p *ngFor="let role of user.roles">
+                <p *ngFor="let role of newUser.roles">
                   - {{role.roleName}}
                 </p>
               </li>

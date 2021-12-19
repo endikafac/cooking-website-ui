@@ -5,13 +5,13 @@ import { ToastrService } from 'ngx-toastr';
 import { User } from '../models/user';
 
 @Component({
-  selector: 'app-detail-user',
-  templateUrl: './detail-user.component.html',
-  styleUrls: ['./detail-user.component.css']
+  selector: 'app-detail-recipe',
+  templateUrl: './detail-recipe.component.html',
+  styleUrls: ['./detail-recipe.component.css']
 })
-export class DetailUserComponent implements OnInit {
+export class DetailRecipeComponent implements OnInit {
 
-  user: User = new User("", "", "", "", "", []);
+  newUser: User = new User("", "", "", "", "", []);
 
   constructor(
     private authService: AuthService,
@@ -25,7 +25,8 @@ export class DetailUserComponent implements OnInit {
     const id = paramsAux["id"];
     this.authService.detail(id).subscribe(
       data => {
-        this.user = data;
+        this.newUser = data;
+        console.log("this.newUser",this.newUser);
       },
       err => {
         this.toastr.error(err.error.mensaje, 'Fail', {

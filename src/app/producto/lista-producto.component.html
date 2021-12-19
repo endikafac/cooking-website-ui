@@ -30,11 +30,7 @@
             <a *ngIf="isAdmin" title="Edit" class="btn btn-outline-warning btn-sm" routerLink="/editar/{{producto.id}}" href="#" role="button"><i class="far fa-edit"></i></a>
             <a *ngIf="isAdmin" title="Delete" class="btn btn-outline-danger btn-sm" (click)="borrar((producto.id)?producto.id:0)" href="#" role="button"><i class="far fa-trash-alt"></i></a>
           </td>
-          <!--
-          <td><button class="btn btn-outline-primary btn-sm" routerLink="/detalle/{{producto.id}}"><i class="far fa-eye"></i> Ver</button></td>
-          <td *ngIf="isAdmin"><button class="btn btn-outline-warning btn-sm" routerLink="/editar/{{producto.id}}"><i class="far fa-edit"></i> Editar</button></td>
-          <td *ngIf="isAdmin"><button class="btn btn-outline-danger btn-sm" (click)="borrar((producto.id)?producto.id:0)"><i class="far fa-trash-alt"></i> Eliminar</button></td>
-          -->
+
         </tr>
       </tbody>
     </table>

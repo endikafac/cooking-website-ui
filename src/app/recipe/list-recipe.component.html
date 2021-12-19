@@ -1,0 +1,23 @@
+<app-menu></app-menu>
+<div class="container">
+  <div class="input-group">
+    <span class="input-group-text">Search ...</span>
+    <textarea class="form-control form-control-sm" aria-label="Search..."></textarea>
+  </div>
+  <div class="card text-center" *ngFor="let recipe of recipes">
+    <div class="card-header">
+      Author: {{recipe.user.firstname}} {{recipe.user.lastname}}
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">{{recipe.name}}</h5>
+      <p class="card-text">{{recipe.description}}</p>
+      <a title="Show" class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" routerLink="/recipe/detail/{{recipe.id}}"  role="button"><i class="far fa-eye"></i></a>
+      <a *ngIf="isAdmin" title="Edit" class="btn btn-outline-warning btn-sm" routerLink="/recipe/edit/{{recipe.id}}"  role="button"><i class="far fa-edit"></i></a>
+      <a *ngIf="isAdmin" title="Delete" class="btn btn-outline-danger btn-sm" (click)="delete((recipe.id)?recipe.id:0)"  role="button"><i class="far fa-trash-alt"></i></a>
+
+    </div>
+    <div class="card-footer text-muted">
+      {{recipe.auCreationDate}}
+    </div>
+  </div>
+</div>

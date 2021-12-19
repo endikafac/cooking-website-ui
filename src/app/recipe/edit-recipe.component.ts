@@ -3,19 +3,19 @@ import { User } from '../models/user';
 import { AuthService } from '../service/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { Role } from '../models/role';
+import { Recipe } from '../models/recipe';
 
 @Component({
-  selector: 'app-edit-user',
-  templateUrl: './edit-user.component.html',
-  styleUrls: ['./edit-user.component.css']
+  selector: 'app-edit-recipe',
+  templateUrl: './edit-recipe.component.html',
+  styleUrls: ['./edit-recipe.component.css']
 })
-export class EditUserComponent implements OnInit {
+export class EditRecipeComponent implements OnInit {
 
-  user: User = new User("", "", "", "", "", []);
+  newUser: User = new User("", "", "", "", "", []);
   newPassword: string;
   newPasswordConfirmation: string;
-  role: Role = new Role("");
+  role: Recipe = new Recipe("");
   rolesAux : Role[] = [];
 
   constructor(
@@ -33,7 +33,7 @@ export class EditUserComponent implements OnInit {
     this.authService.detail(id).subscribe(
       data => {
         console.log("data-->",data);
-        this.user = data;
+        this.newUser = data;
       },
       err => {
         this.toastr.error(err.error.mensaje, 'Fail', {
@@ -47,7 +47,7 @@ export class EditUserComponent implements OnInit {
   onUpdate(): void {
     let paramsAux = this.activatedRoute.snapshot.params;
     const id = paramsAux["id"];
-    this.user.password = this.newPassword;
+    this.newUser.password = this.newPassword;
     /*
     var index = 0;
     console.log('this.newUser.roles',this.newUser.roles);
@@ -62,7 +62,7 @@ export class EditUserComponent implements OnInit {
     console.log('rolesAux',this.rolesAux);
     this.newUser.roles = this.rolesAux;
     */
-    this.authService.update(id, this.user).subscribe(
+    this.authService.update(id, this.newUser).subscribe(
       data => {
         this.toastr.success('User updated', 'OK', {
           timeOut: 3000, positionClass: 'toast-top-center'

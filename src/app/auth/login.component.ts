@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../service/auth.service';
 import { Router } from '@angular/router';
-import { LoginUser } from '../models/login-user';
+import { LoginUser } from "../models/login-user";
 import { TokenService } from '../service/token.service';
 import { ToastrService } from 'ngx-toastr';
+import { User } from '../models/user';
+import { Role } from '../models/role';
 
 @Component({
   selector: 'app-login',
@@ -15,10 +17,16 @@ export class LoginComponent implements OnInit {
   isLogged = false;
   isLoginFail = false;
   loginUser: LoginUser;
+  newUser: User;
   username: string;
   password: string;
+  email: string;
   roles: string[] = [];
   errMsj: string;
+  isRegister: boolean;
+  isLogin: boolean;
+  role: Role;
+  
 
   constructor(
     private tokenService: TokenService,
@@ -28,11 +36,14 @@ export class LoginComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.isLogged = false;
     if (this.tokenService.getToken()) {
       this.isLogged = true;
       this.isLoginFail = false;
       this.roles = this.tokenService.getAuthorities();
     }
+    this.isLogin = true;
+    this.isRegister = false;
   }
 
   onLogin(): void {
@@ -45,9 +56,11 @@ export class LoginComponent implements OnInit {
         this.tokenService.setUserName(data.username);
         this.tokenService.setAuthorities(data.authorities);
         this.roles = data.authorities;
+        /*
         this.toastr.success('Welcome ' + data.username, 'OK', {
           timeOut: 3000, positionClass: 'toast-top-center'
         });
+        */
         this.router.navigate(['/list']);
       },
       err => {
@@ -59,6 +72,37 @@ export class LoginComponent implements OnInit {
         // console.log(err.error.message);
       }
     );
+  }
+
+  onRegister(): void {
+    this.role = new Role('ROLE_USER');
+    this.newUser = new User(this.username, this.email, this.password, '', '', [this.role]);
+    this.authService.create(this.newUser).subscribe(
+      data => {
+        this.toastr.success('User has been successfully created', 'OK', {
+          timeOut: 3000, positionClass: 'toast-top-center'
+        });
+
+        this.router.navigate(['/login']);
+      },
+      err => {
+        this.errMsj = err.error.mensaje;
+        this.toastr.error(this.errMsj, 'Fail', {
+          timeOut: 3000,  positionClass: 'toast-top-center',
+        });
+        // console.log(err.error.message);
+      }
+    );
+  }
+
+  goToRegister(): void {
+    this.isRegister = true;
+    this.isLogin = false;
+  }
+
+  goToLogin(): void {
+    this.isLogin = true;
+    this.isRegister = false;
   }
 
 }

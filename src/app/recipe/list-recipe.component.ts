@@ -1,32 +1,31 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from '../models/user';
-import { AuthService } from '../service/auth.service';
+import { Recipe } from '../models/recipe';
 import { ToastrService } from 'ngx-toastr';
 import { TokenService } from '../service/token.service';
+import { RecipeService } from '../service/recipe.service';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-list-user',
-  templateUrl: './list-user.component.html',
-  styleUrls: ['./list-user.component.css']
+  selector: 'app-list-recipe',
+  templateUrl: './list-recipe.component.html',
+  styleUrls: ['./list-recipe.component.css']
 })
-export class ListUserComponent implements OnInit {
+export class ListRecipeComponent implements OnInit {
 
- 
-
-  users: User[] = [];
+  recipes: Recipe[] = [];
   roles: string[];
   isAdmin = false;
 
   constructor(
-    private authService: AuthService,
+    private recipeService: RecipeService,
     private toastr: ToastrService,
     private tokenService: TokenService,
     private router: Router
   ) { }
 
   ngOnInit() {
-    this.userLoad();
+    this.recipesLoad();
     this.roles = this.tokenService.getAuthorities();
     this.roles.forEach(rol => {
       if (rol === 'ROLE_ADMIN') {
@@ -36,10 +35,10 @@ export class ListUserComponent implements OnInit {
   }
 
 
-  userLoad(): void {
-    this.authService.list().subscribe(
+  recipesLoad(): void {
+    this.recipeService.list().subscribe(
       data => {
-        this.users = data;
+        this.recipes = data;
       },
       err => {
         console.log(err);
@@ -48,13 +47,12 @@ export class ListUserComponent implements OnInit {
   }
 
   delete(id: number) {
-    this.authService.delete(id).subscribe(
+    this.recipeService.delete(id).subscribe(
       data => {
-        this.toastr.success('User deleted', 'OK', {
+        this.toastr.success('Recipe deleted', 'OK', {
           timeOut: 3000, positionClass: 'toast-top-center'
         });
-       //this.userLoad();
-       this.router.navigate(['/user-list']);
+       this.router.navigate(['/recipe-list']);
       },
       err => {
         this.toastr.error(err.error.mensaje, 'Fail', {

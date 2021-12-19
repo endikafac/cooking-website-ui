@@ -23,9 +23,15 @@ export class ProdGuardService implements CanActivate {
       if (rol === 'ROLE_ADMIN') {
         this.realRol = 'admin';
       }
+      if (rol === 'ROLE_USER') {
+        this.realRol = 'user';
+      }
+      if (rol === 'ROLE_CHEF') {
+        this.realRol = 'chef';
+      }
     });
     if (!this.tokenService.getToken() || expectedRol.indexOf(this.realRol) === -1) {
-      this.router.navigate(['/']);
+      this.router.navigate(['/login']);
       return false;
     }
     return true;

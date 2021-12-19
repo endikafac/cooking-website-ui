@@ -2,22 +2,24 @@ import { Component, OnInit } from '@angular/core';
 import { TokenService } from '../service/token.service';
 import { AuthService } from '../service/auth.service';
 import { Router } from '@angular/router';
-import { NewUser } from '../models/new-user';
+import { User } from '../models/user';
 import { ToastrService } from 'ngx-toastr';
+import { Role } from '../models/role';
 
 @Component({
   selector: 'app-registro',
-  templateUrl: './registro.component.html',
-  styleUrls: ['./registro.component.css']
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.css']
 })
-export class RegistroComponent implements OnInit {
+export class RegisterComponent implements OnInit {
 
-  newUser: NewUser;
+  newUser: User;
   username: string;
   email: string;
   password: string;
   errMsj: string;
   isLogged = false;
+  role: Role;
 
   constructor(
     private tokenService: TokenService,
@@ -27,13 +29,15 @@ export class RegistroComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.isLogged = false;
     if (this.tokenService.getToken()) {
       this.isLogged = true;
     }
   }
 
   onRegister(): void {
-    this.newUser = new NewUser(this.username, this.email, this.password);
+    this.role = new Role('ROLE_USER');
+    this.newUser = new User(this.username, this.email, this.password, '', '', [this.role]);
     this.authService.create(this.newUser).subscribe(
       data => {
         this.toastr.success('User has been successfully created', 'OK', {

@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
-  selector: 'app-editar-producto',
+  selector: 'app-edit-product',
   templateUrl: './editar-producto.component.html',
   styleUrls: ['./editar-producto.component.css']
 })

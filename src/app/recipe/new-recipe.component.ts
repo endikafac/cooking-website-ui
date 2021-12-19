@@ -7,11 +7,11 @@ import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-new-user',
-  templateUrl: './new-user.component.html',
-  styleUrls: ['./new-user.component.css']
+  selector: 'app-new-recipe',
+  templateUrl: './new-recipe.component.html',
+  styleUrls: ['./new-recipe.component.css']
 })
-export class NewUserComponent implements OnInit {
+export class NewRecipeComponent implements OnInit {
 
   newUser: User = new User("", "", "", "", "", []);
   roles: Role[];
