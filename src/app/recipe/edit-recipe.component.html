@@ -1,22 +1,22 @@
 <app-menu></app-menu>
-<div class="container" *ngIf="newUser">
+<div class="container" *ngIf="user">
     <div class="row mt-5">
         <div class="col-md-4 mx-auto">
             <form (ngSubmit)="onUpdate()" novalidate #f="ngForm">
                 <div class="form-group input-group-sm">
                     <label for="id">id</label>
                     <input type="text" class="form-control" id="id" name="nombre" disabled
-                    [(ngModel)]="newUser.id" required >
+                    [(ngModel)]="user.id" required >
                 </div>
                 <div class="form-group input-group-sm">
                     <label for="username">Username</label>
                     <input type="text" class="form-control" id="username" name="username" disabled
-                    [(ngModel)]="newUser.username" required>
+                    [(ngModel)]="user.username" required>
                 </div>
                 <div class="form-group input-group-sm">
                     <label for="firstname">Firstname</label>
                     <input type="text" class="form-control" id="firstname" name="firstname" maxlength="150"
-                    [(ngModel)]="newUser.firstname" required>
+                    [(ngModel)]="user.firstname" required>
                     <!--<div class="invalid-feedback">
                         Please choose a username.
                       </div>-->
@@ -24,12 +24,12 @@
                 <div class="form-group input-group-sm">
                     <label for="lastname">Lastname</label>
                     <input type="text" class="form-control" id="lastname" name="lastname" maxlength="300"
-                    [(ngModel)]="newUser.lastname" required>
+                    [(ngModel)]="user.lastname" required>
                 </div>
                 <div class="form-group input-group-sm">
                     <label for="userEmail1">Email</label>
                     <input type="text" class="form-control" id="userEmail1" name="userEmail1" maxlength="300"
-                    [(ngModel)]="newUser.email" required>
+                    [(ngModel)]="user.email" required>
                 </div>
                 <div class="form-group input-group-sm">
                     <label for="newPassword">New Password</label>

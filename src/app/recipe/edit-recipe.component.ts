@@ -12,11 +12,10 @@ import { Recipe } from '../models/recipe';
 })
 export class EditRecipeComponent implements OnInit {
 
-  newUser: User = new User("", "", "", "", "", []);
+  user: User = new User("", "", "", "", "", []);
   newPassword: string;
   newPasswordConfirmation: string;
-  role: Recipe = new Recipe("");
-  rolesAux : Role[] = [];
+  role: Recipe = new Recipe(this.user,"","",[]);
 
   constructor(
     private authService: AuthService,
@@ -33,7 +32,7 @@ export class EditRecipeComponent implements OnInit {
     this.authService.detail(id).subscribe(
       data => {
         console.log("data-->",data);
-        this.newUser = data;
+        this.user = data;
       },
       err => {
         this.toastr.error(err.error.mensaje, 'Fail', {
@@ -47,7 +46,7 @@ export class EditRecipeComponent implements OnInit {
   onUpdate(): void {
     let paramsAux = this.activatedRoute.snapshot.params;
     const id = paramsAux["id"];
-    this.newUser.password = this.newPassword;
+    this.user.password = this.newPassword;
     /*
     var index = 0;
     console.log('this.newUser.roles',this.newUser.roles);
@@ -62,7 +61,7 @@ export class EditRecipeComponent implements OnInit {
     console.log('rolesAux',this.rolesAux);
     this.newUser.roles = this.rolesAux;
     */
-    this.authService.update(id, this.newUser).subscribe(
+    this.authService.update(id, this.user).subscribe(
       data => {
         this.toastr.success('User updated', 'OK', {
           timeOut: 3000, positionClass: 'toast-top-center'
