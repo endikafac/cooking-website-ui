@@ -7,12 +7,19 @@
       <a title="New user" class="btn btn-outline-success btn-sm" routerLink="/user/new"  role="button"><i class="fas fa-plus-circle"></i> New user</a>
 
   </div>-->
+  <div class="row">
+    <div class="col-sm-12 text-center">
+        <h3> Users list</h3>
+        <h3><small class="text-muted"> </small></h3>
+    </div>
+  
+  </div>
   <div class="mt-3" *ngIf="isAdmin">
     <a *ngIf="isAdmin" title="New User" class="btn btn-outline-success btn-sm" routerLink="/user/new"  role="button"><i class="far plus-circle"></i> New user</a>
   </div>
-  <div class="table-responsive-sm caption-top">
-    <table class="table caption-top table-light table-striped table-hover table-sm ">
-      <caption>List of user</caption>
+  <div class="table-responsive-sm ">
+    <table class="table  table-light table-striped table-hover table-sm ">
+      <!--<caption>List of user</caption>-->
       <thead class="table-dark table-sm">
         <tr class="">
           <th scope="col">Id</th>
@@ -56,5 +63,5 @@
       </li>
     </ul>
   </div>
-
+  <div id="liveAlertPlaceholder"></div>
 </div>

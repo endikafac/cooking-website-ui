@@ -1,24 +1,33 @@
 <nav class="navbar navbar-expand-sm navbar-light bg-light mb-4">
-    <a class="navbar-brand" routerLink="/list">Cooking Web Site</a>
+    <a class="navbar-brand" routerLink="/recipe/list">
+      <img src="..\assets\images\CookingWebSiteLogoNoLettersClear.png"  alt="Cooking Web Site - Logo" width="45" height="38">
+    </a>
+    <a class="navbar-brand" routerLink="/recipe/list">Cooking Web Site</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" *ngIf="isLogged" >Welcome {{user.firstname}} {{user.lastname}}</a>
+        </li>
         <!--<li class="nav-item">
           <a class="nav-link" *ngIf="isLogged" routerLink="/list"><i class="fas fa-home"></i> Home</a>
         </li>-->
-        <li class="nav-item" *ngIf="(isLogged && isAdmin)">
+        <!--<li class="nav-item" *ngIf="(isLogged && isAdmin)">
           <a class="nav-link" routerLink="/list"><i class="far fa-list-alt"></i> Products</a>
+        </li>-->
+        <li class="nav-item" *ngIf="(isLogged && !isFirstLogin)">
+          <a class="nav-link" routerLink="/recipe/list"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-heading" viewBox="0 0 16 16">
+            <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
+            <path d="M3 8.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm0-5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-1z"/>
+          </svg> Recipes</a>
         </li>
         <li class="nav-item" *ngIf="(isLogged && isAdmin)">
-          <a class="nav-link" routerLink="/recipe/list"><i class="far fa-list-alt"></i> Recipes</a>
-        </li>
-        <li class="nav-item" *ngIf="(isLogged && isAdmin)">
-          <a class="nav-link" routerLink="/user/list"><i class="far fa-user"></i> Users</a>
+          <a class="nav-link" routerLink="/user/list" [routerLinkActive]="'active'"><i class="far fa-user"></i> Users</a>
         </li>
         <li class="nav-item" *ngIf="!isLogged">
-            <a class="nav-link"  routerLink="/login"><i class="fas fa-sign-in-alt"></i> Log In</a>
+            <a class="nav-link"  routerLink="/index" [routerLinkActive]="'active'"><i class="fas fa-sign-in-alt"></i> Log In</a>
           </li>
           <li class="nav-item" *ngIf="isLogged" (click)="onLogOut()">
             <a class="nav-link" style="cursor: pointer;"><i class="fas fa-door-open" ></i> Log Out</a>

@@ -9,28 +9,28 @@
                     [(ngModel)]="newUser.id" required>
                 </div>-->
                 <div class="form-group input-group-sm">
-                    <label for="username">Username</label>
+                    <label for="username">Username<strong class="required"> *</strong></label>
                     <input type="text" class="form-control" id="username" name="username" maxlength="50"
                     [(ngModel)]="newUser.username" required>
                 </div>
                 <div class="form-group input-group-sm">
-                    <label for="firstname">Firstname</label>
+                    <label for="firstname">Firstname<strong class="required"> *</strong></label>
                     <input type="text" class="form-control" id="firstname" name="firstname"  maxlength="150"
                     [(ngModel)]="newUser.firstname" >
                 </div>
                 <div class="form-group input-group-sm">
-                    <label for="lastname">Lastname</label>
+                    <label for="lastname">Lastname<strong class="required"> *</strong></label>
                     <input type="text" class="form-control" id="lastname" name="lastname" maxlength="300"
                     [(ngModel)]="newUser.lastname" >
                 </div>
                 <div class="form-group input-group-sm">
-                    <label for="userEmail">Email</label>
+                    <label for="userEmail">Email<strong class="required"> *</strong></label>
                     <input type="text" class="form-control" id="userEmail" name="userEmail"  maxlength="300"
                     [(ngModel)]="newUser.email" required>
                 </div>
 
                 <div class="form-group ">
-                    <label for="selectMultipleRoles">Roles</label>
+                    <label for="selectMultipleRoles">Roles<strong class="required"> *</strong></label>
                     <select multiple class="form-control" id="selectMultipleRoles" [(ngModel)]="selectedRoles" [ngModelOptions]="{standalone: true}" 
                         (change)="roleLoad(selectedRoles)"
                         required> 
@@ -40,7 +40,10 @@
                           <!---->
                     </select>
                   </div>
-
+                  <div class="d-flex align-items-center" *ngIf="spinner">
+                    <strong>Creating...</strong>
+                    <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+                  </div>
                 <!--
                 <div class="form-group">
                     <input type="password" name="password" id="password" class="form-control"

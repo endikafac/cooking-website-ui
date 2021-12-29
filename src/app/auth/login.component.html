@@ -1,5 +1,6 @@
 <div class="text-center" *ngIf="isLogged; else loggedOut">
-    <h2>Ya has iniciado sesión</h2>
+    <app-list-recipe *ngIf="isLogged;"></app-list-recipe>
+    <app-login *ngIf="!isLogged;"></app-login>
 </div>
 
 <ng-template #loggedOut>

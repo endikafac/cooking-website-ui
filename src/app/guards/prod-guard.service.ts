@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, Data } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { TokenService } from '../service/token.service';
 
 @Injectable({
@@ -7,10 +8,10 @@ import { TokenService } from '../service/token.service';
 })
 export class ProdGuardService implements CanActivate {
 
-  realRol: string;
 
   constructor(
     private tokenService: TokenService,
+    private toastr: ToastrService,
     private router: Router
   ) { }
 
@@ -18,20 +19,26 @@ export class ProdGuardService implements CanActivate {
     let dataAux = route.data;
     const expectedRol = dataAux["expectedRol"];
     const roles = this.tokenService.getAuthorities();
-    this.realRol = 'user';
-    roles.forEach(rol => {
-      if (rol === 'ROLE_ADMIN') {
-        this.realRol = 'admin';
-      }
-      if (rol === 'ROLE_USER') {
-        this.realRol = 'user';
-      }
-      if (rol === 'ROLE_CHEF') {
-        this.realRol = 'chef';
-      }
+    console.log('roles',roles);
+    console.log('expectedRol',expectedRol);
+    var authorizedByRole: boolean = false;
+    roles.forEach(role => {
+      for (let userRole of expectedRol){
+          if (role === userRole){
+            authorizedByRole = true;
+          }
+      }    
+        
+      
     });
-    if (!this.tokenService.getToken() || expectedRol.indexOf(this.realRol) === -1) {
-      this.router.navigate(['/login']);
+
+
+    if (!this.tokenService.getToken() || !authorizedByRole) {
+      this.router.navigate(['/index']);
+      
+      this.toastr.error("Not autorized", 'Fail', {
+        timeOut: 3000,  positionClass: 'toast-top-center',
+      });
       return false;
     }
     return true;

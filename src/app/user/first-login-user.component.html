@@ -1,10 +1,17 @@
 <app-menu></app-menu>
+<div class="row">
+    <div class="col-sm-12 text-center">
+        <h3> First Access</h3>
+        <h3><small class="text-muted"> Data Verification and Password Modification</small></h3>
+    </div>
+
+</div>
 <div class="container" *ngIf="user">
     <div class="row mt-5">
         <div class="col-md-4 mx-auto">
             <form (ngSubmit)="onUpdate()" novalidate #f="ngForm">
                 <div class="form-group input-group-sm">
-                    <label for="id">id</label>
+                    <label for="id">Id</label>
                     <input type="text" class="form-control" id="id" name="nombre" disabled
                     [(ngModel)]="user.id" required >
                 </div>
@@ -26,37 +33,26 @@
                     <input type="text" class="form-control" id="lastname" name="lastname" maxlength="300"
                     [(ngModel)]="user.lastname" required>
                 </div>
-                <div class="form-group input-group-sm">
+                <div class="form-group input-group-sm ">
                     <label for="userEmail1">Email<strong class="required"> *</strong></label>
                     <input type="text" class="form-control" id="userEmail1" name="userEmail1" maxlength="300"
                     [(ngModel)]="user.email" required>
                 </div>
-                <div class="form-group input-group-sm">
-                    <label for="newPassword">New Password</label>
+                <div class="form-group input-group-sm " *ng-if="!isRegisterInLogin">
+                    <label for="newPassword" >New Password<strong class="required"> *</strong></label>
                     <input type="password" class="form-control" id="newPassword" name="newPassword" (change)="passwordValidation()" maxlength="100"
-                    [(ngModel)]="newPassword" >
+                    [(ngModel)]="newPassword" required>
                 </div>
-                <div class="form-group input-group-sm">
-                    <label for="newPasswordConfirmation">New Password Confirmation</label>
+                <div class="form-group input-group-sm" *ng-if="!isRegisterInLogin">
+                    <label for="newPasswordConfirmation">New Password Confirmation<strong class="required"> *</strong></label>
                     <input type="password" class="form-control" id="newPasswordConfirmation" name="newPasswordConfirmation" (change)="passwordValidation()" maxlength="100"
-                    [(ngModel)]="newPasswordConfirmation" >
+                    [(ngModel)]="newPasswordConfirmation" required>
                 </div>
                 
-                <div class="form-group ">
-                    <label for="selectMultipleRoles">Roles<strong class="required"> *</strong></label>
-                    <select multiple class="form-control" id="selectMultipleRoles" [(ngModel)]="selectedRoles" [ngModelOptions]="{standalone: true}" 
-                        (change)="roleLoad(selectedRoles)"
-                        required> 
-                        <option  *ngFor="let role of roles" value="{{role.id}}" >
-                            {{role.roleName}}
-                          </option>
-                    </select>
-                  </div>
-
-                <button class="btn btn-outline-success btn-block" [disabled]="!f.valid">
+                <button class="btn btn-outline-success btn-block" [disabled]="!f.valid" routerLink="/index">
                     <i class="fas fa-pencil-alt"></i> Update</button>
-                <button class="btn btn-outline-primary btn-block" routerLink="/user/list">
-                    <i class="fas fa-arrow-alt-circle-left"></i> Back to</button>
+                <!--<button class="btn btn-outline-primary btn-block" routerLink="/index">
+                    <i class="fas fa-arrow-alt-circle-left"></i> Volver</button>-->
             </form>
         </div>
     </div>

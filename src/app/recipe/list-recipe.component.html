@@ -1,23 +1,111 @@
 <app-menu></app-menu>
-<div class="container">
-  <div class="input-group">
-    <span class="input-group-text">Search ...</span>
-    <textarea class="form-control form-control-sm" aria-label="Search..."></textarea>
-  </div>
-  <div class="card text-center" *ngFor="let recipe of recipes">
-    <div class="card-header">
-      Author: {{recipe.user.firstname}} {{recipe.user.lastname}}
-    </div>
-    <div class="card-body">
-      <h5 class="card-title">{{recipe.name}}</h5>
-      <p class="card-text">{{recipe.description}}</p>
-      <a title="Show" class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" routerLink="/recipe/detail/{{recipe.id}}"  role="button"><i class="far fa-eye"></i></a>
-      <a *ngIf="isAdmin" title="Edit" class="btn btn-outline-warning btn-sm" routerLink="/recipe/edit/{{recipe.id}}"  role="button"><i class="far fa-edit"></i></a>
-      <a *ngIf="isAdmin" title="Delete" class="btn btn-outline-danger btn-sm" (click)="delete((recipe.id)?recipe.id:0)"  role="button"><i class="far fa-trash-alt"></i></a>
+<!--<app-first-login-user *ngIf="isFirstLogin"></app-first-login-user>-->
 
+<div class="container" *ngIf="!isFirstLogin">
+  <div class="row">
+    <div class="col-sm-12 text-center">
+        <h3> Recipes list</h3>
+        <h3><small class="text-muted"> </small></h3>
     </div>
-    <div class="card-footer text-muted">
-      {{recipe.auCreationDate}}
+  
+  </div>
+  <div class="row">
+    <div class="col-sm-6 text-left">
+      <h4> Filters</h4>
     </div>
   </div>
+  <div class="row">
+    <div class="col">
+      <div class="input-group input-group-sm mb-3">
+        <input type="text"  [(ngModel)]="filter" maxlength="50" class="form-control" placeholder="Search in recipes..." aria-label="Search in recipes..." aria-describedby="button-addon2">
+        <button class="btn btn-outline-secondary btn-sm" type="button" id="button-addon2" (click)="searchByFilter()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="col">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <div class="form-group input-group input-group-sm mb-2">
+        <!--<tag-input  [ngModel]=""
+                  [onlyFromAutocomplete]="true" [maxItems]='5'>
+            <tag-input-dropdown [showDropdownIfEmpty]="true"
+                                [autocompleteItems]="['iTem1', 'item2', 'item3']">
+                <ng-template let-item="item" let-index="index">
+                    {{ index }}: {{ item.display }}
+                </ng-template>
+            </tag-input-dropdown>
+        </tag-input>-->
+        <tag-input [ngModel]="" theme='bootstrap' [onlyFromAutocomplete]="true"  [maxItems]='5' [ngModelOptions]="{standalone: true}"  [identifyBy]="'id'"
+                        [displayBy]="'keyword'" (onAdd)="($event)" 
+                            (onRemove)="($event)" required>
+              <tag-input-dropdown [showDropdownIfEmpty]="true" [autocompleteItems]="['iTem1', 'item2', 'item3']">
+                  <ng-template let-item="item" let-index="index">
+                      {{ index }}: {{ item.display }}
+                  </ng-template>
+              </tag-input-dropdown>
+        </tag-input>
+  
+        <button class="btn btn-outline-secondary btn-sm" type="button" id="button-addon2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+        </svg></button>
+      </div>
+    </div>
+    <div class="col">
+      <div class="mt-3 text-right" *ngIf="isChef">
+        <a title="New Recipe" class="btn btn-outline-success btn-sm" routerLink="/recipe/new"  role="button"><i class="far plus-circle"></i> New recipe </a>
+      </div>
+    </div>
+
+  </div>
+
+    
+<!--"  let recipe of recipes.constructor(10); let i = index" -->
+  <!--<div class="card text-center" *ngFor="let recipe of recipes">-->
+    <div class="row">
+        <div class="col">
+          <div class="card text-center" *ngFor="let recipe of recipes; index as i; even as isEven">
+              <div class="card-header" *ngIf="isEven">
+                <h5><strong>{{recipe.name}}</strong></h5>
+              </div>
+              <div class="card-body" *ngIf="isEven">
+                <!--<h5 class="card-title">{{recipe.name}}</h5>-->
+                <p class="card-text">{{showDescription(recipe.description)}}</p>
+                <a title="Show" class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" routerLink="/recipe/detail/{{recipe.id}}"  role="button"><i class="far fa-eye"></i></a>
+                <!--routerLink="/recipe/edit/{{recipe.id}}"-->
+                <a *ngIf="isChef && (recipe.user.id == user.id)" title="Edit" class="btn btn-outline-warning btn-sm"  (click)="goToEdit(recipe.id)" role="button"><i class="far fa-edit"></i></a>
+                <a *ngIf="isChef && (recipe.user.id == user.id)" title="Delete" class="btn btn-outline-danger btn-sm" (click)="delete((recipe.id)?recipe.id:0)"  role="button"><i class="far fa-trash-alt"></i></a>
+          
+              </div>
+              <div class="card-footer text-muted" *ngIf="isEven">
+                Author: {{recipe.user.firstname}} {{recipe.user.lastname}} <br>
+                Creation Date: {{formatDate(recipe.auCreationDate) }}
+              </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card text-center" *ngFor="let recipe of recipes; index as i; odd as isOdd">
+            <div class="card-header" *ngIf="isOdd">
+              <h5><strong>{{recipe.name}}</strong></h5>
+            </div>
+            <div class="card-body" *ngIf="isOdd">
+              <!--<h5 class="card-title">{{recipe.name}}</h5>-->
+              <p class="card-text">{{showDescription(recipe.description)}}</p>
+              <a title="Show" class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" routerLink="/recipe/detail/{{recipe.id}}"  role="button"><i class="far fa-eye"></i></a>
+              <a *ngIf="isChef && (recipe.user.id == user.id)" title="Edit" class="btn btn-outline-warning btn-sm" (click)="goToEdit(recipe.id)" role="button"><i class="far fa-edit"></i></a>
+              <a *ngIf="isChef && (recipe.user.id == user.id)" title="Delete" class="btn btn-outline-danger btn-sm" (click)="delete((recipe.id)?recipe.id:0)"  role="button"><i class="far fa-trash-alt"></i></a>
+        
+            </div>
+            <div class="card-footer text-muted" *ngIf="isOdd">
+              Author: {{recipe.user.firstname}} {{recipe.user.lastname}} <br>
+                Creation Date: {{formatDate(recipe.auCreationDate) }}
+            </div>
+        </div>
+        </div>
+    </div>
+  
 </div>

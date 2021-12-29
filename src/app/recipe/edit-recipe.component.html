@@ -1,52 +1,100 @@
 <app-menu></app-menu>
-<div class="container" *ngIf="user">
-    <div class="row mt-5">
-        <div class="col-md-4 mx-auto">
+<div class="container" *ngIf="recipe">
+    <div class="row mt-10">
+        <div class="col-md-5 mx-auto">
             <form (ngSubmit)="onUpdate()" novalidate #f="ngForm">
                 <div class="form-group input-group-sm">
-                    <label for="id">id</label>
+                    <label for="id">Id</label>
                     <input type="text" class="form-control" id="id" name="nombre" disabled
-                    [(ngModel)]="user.id" required >
+                    [(ngModel)]="recipe.id" required >
+                </div>
+<!--
+                <li class="list-group-item"><b>Id: </b>{{recipe.id}}</li>
+                <li class="list-group-item"><b>Author: </b>{{recipe.user.firstname}} {{recipe.user.lastname}}</li>
+                <li class="list-group-item"><b>Name: </b>{{recipe.name}}</li>
+                <li class="list-group-item"><b>Description: </b>{{recipe.description}}</li>
+                <li class="list-group-item"><b>Creation Date: </b>{{formatDate(recipe.auCreationDate) }}</li>
+                <li class="list-group-item"><b>Keywords: </b>
+                  <p *ngFor="let keywordAux of recipe.keywords">
+                    - {{keywordAux.keyword}}
+                  </p>
+                </li>
+                <li class="list-group-item"><b>Comments: </b>
+                  <p *ngFor="let commentAux of recipe.comments">
+                    - "{{commentAux.comment}}" - {{commentAux.user.firstname}} {{commentAux.user.lastname}}
+                  </p>
+                </li>
+            -->
+                <div class="form-group input-group-sm">
+                    <label for="author">Author</label>
+                    <input type="text" class="form-control" id="author" name="author" disabled
+                    [(ngModel)]="recipe.user.firstname+' '+recipe.user.lastname " required>
                 </div>
                 <div class="form-group input-group-sm">
-                    <label for="username">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" disabled
-                    [(ngModel)]="user.username" required>
-                </div>
-                <div class="form-group input-group-sm">
-                    <label for="firstname">Firstname</label>
-                    <input type="text" class="form-control" id="firstname" name="firstname" maxlength="150"
-                    [(ngModel)]="user.firstname" required>
+                    <label for="name">Name <strong class="required"> *</strong></label>
+                    <input  class="form-control" id="name" name="name" maxlength="150"
+                    [(ngModel)]="recipe.name" required>
                     <!--<div class="invalid-feedback">
                         Please choose a username.
                       </div>-->
                 </div>
                 <div class="form-group input-group-sm">
-                    <label for="lastname">Lastname</label>
-                    <input type="text" class="form-control" id="lastname" name="lastname" maxlength="300"
-                    [(ngModel)]="user.lastname" required>
+                    <label for="description">Description <strong class="required"> *</strong></label>
+                    <textarea type="text-area" class="form-control" id="description" name="description" maxlength="1500"
+                    [(ngModel)]="recipe.description" required></textarea>
                 </div>
+
                 <div class="form-group input-group-sm">
-                    <label for="userEmail1">Email</label>
-                    <input type="text" class="form-control" id="userEmail1" name="userEmail1" maxlength="300"
-                    [(ngModel)]="user.email" required>
+                    <label for="keywords">Keywords <strong class="required"> *</strong></label>
+                    <tag-input [ngModel]="recipe.keywords" [maxItems]='5' theme='bootstrap' [ngModelOptions]="{standalone: true}"  [identifyBy]="'id'"
+                        [displayBy]="'keyword'" (onAdd)="onTagAdded($event)" 
+                            (onRemove)="onTagRemoved($event)" required>
+                    </tag-input>
+
+                    <!--
+                            itemsAsObjects = [{id: 0, name: 'Angular'}, {id: 1, name: 'React'}];
+                        <tag-input [ngModel]="itemsAsObjects" theme='bootstrap' name="'name'" [identifyBy]="'id'" [displayBy]="'name'" ></tag-input>
+                    -->
                 </div>
-                <div class="form-group input-group-sm">
-                    <label for="newPassword">New Password</label>
-                    <input type="password" class="form-control" id="newPassword" name="newPassword" (change)="passwordValidation()" maxlength="100"
-                    [(ngModel)]="newPassword" required>
-                </div>
-                <div class="form-group input-group-sm">
-                    <label for="newPasswordConfirmation">New Password Confirmation</label>
-                    <input type="password" class="form-control" id="newPasswordConfirmation" name="newPasswordConfirmation" (change)="passwordValidation()" maxlength="100"
-                    [(ngModel)]="newPasswordConfirmation" required>
-                </div>
-                
-                <button class="btn btn-outline-success btn-block" [disabled]="!f.valid">
-                    <i class="fas fa-pencil-alt"></i> Actualizar</button>
-                <button class="btn btn-outline-primary btn-block" routerLink="/user/list">
-                    <i class="fas fa-arrow-alt-circle-left"></i> Volver</button>
+                <br><br>
+                <button class="btn btn-outline-success btn-block" [disabled]="!f.valid || keywordsIsEmpty">
+                    <i class="fas fa-pencil-alt"></i> Update</button>
+
+
+                <br>
+                <button class="btn btn-outline-primary btn-block" routerLink="/recipe/list">
+                    <i class="fas fa-arrow-alt-circle-left"></i> Back to</button>
             </form>
+        </div>
+        <div class="col-md-5 mx-auto">
+            <br><br>
+            <div class="form-group input-group-sm ">
+                <label for="selectMultipleKeywords">Comments</label>
+                <figure class="text-center"  *ngFor="let comment of comments">
+                    <blockquote class="blockquote be-comment-text" *ngIf="!commentEdit.get(comment.id)">
+                    <p>{{comment.comment}}</p>
+                    </blockquote>
+                    <textarea *ngIf="commentEdit.get(comment.id)" type="text-area" class="form-control" id="editComment_{{comment.id}}" name="editComment_{{comment.id}}" placeholder="Edit comment..." maxlength="500"
+                    [(ngModel)]="comment.comment" required></textarea>
+                    <button *ngIf="commentEdit.get(comment.id)" type="button" (click)="editComment(comment.id,comment.comment)" class="btn btn-outline-primary btn-block btn-link btn-sm" title="Add comment..."><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+                        <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
+                    </svg> Edit comment 
+                    </button>
+                    <figcaption class="blockquote-footer be-comment-time">
+                    <cite title="Source Title">{{(comment.author)}}</cite> - {{formatDate(comment.lastDate)}}   
+                    <a *ngIf="(comment.authorId == user.id)" title="Edit" class="btn btn-outline-warning btn-sm" (click)="canEdit(comment.id, true)" role="button"><i class="far fa-edit"></i></a>
+                    <a *ngIf="(comment.authorId == user.id)" title="Delete" class="btn btn-outline-danger btn-sm" (click)="deleteOneComment((comment.id)?comment.id:0)"  role="button"><i class="far fa-trash-alt"></i></a>
+                    </figcaption>
+                    
+     
+                </figure>
+                <textarea type="text-area" class="form-control" id="newComment" name="newComment" placeholder="Add new comment..." maxlength="500"
+                [(ngModel)]="newComment" required></textarea>
+                <button type="button" (click)="saveComment()" class="btn btn-outline-primary btn-block btn-link btn-sm" title="Add comment..."><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+                    <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
+                  </svg> Add comment 
+                </button>
+            </div>
         </div>
     </div>
 </div>

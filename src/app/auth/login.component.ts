@@ -61,7 +61,7 @@ export class LoginComponent implements OnInit {
           timeOut: 3000, positionClass: 'toast-top-center'
         });
         */
-        this.router.navigate(['/list']);
+        this.router.navigate(['/index']);
       },
       err => {
         this.isLogged = false;
@@ -83,6 +83,7 @@ export class LoginComponent implements OnInit {
           timeOut: 3000, positionClass: 'toast-top-center'
         });
 
+        this.goToLogin();
         this.router.navigate(['/login']);
       },
       err => {

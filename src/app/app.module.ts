@@ -3,10 +3,6 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ListaProductoComponent } from './producto/lista-producto.component';
-import { DetalleProductoComponent } from './producto/detalle-producto.component';
-import { NuevoProductoComponent } from './producto/nuevo-producto.component';
-import { EditarProductoComponent } from './producto/editar-producto.component';
 import { interceptorProvider } from './interceptors/prod-interceptor.service';
 
 // User
@@ -14,8 +10,9 @@ import { ListUserComponent } from './user/list-user.component';
 import { DetailUserComponent } from './user/detail-user.component';
 import { EditUserComponent } from './user/edit-user.component';
 import { NewUserComponent } from './user/new-user.component';
+import { FirstLoginUserComponent } from './user/first-login-user.component';
 
-// User
+// Recipe
 import { ListRecipeComponent } from './recipe/list-recipe.component';
 import { DetailRecipeComponent } from './recipe/detail-recipe.component';
 import { EditRecipeComponent } from './recipe/edit-recipe.component';
@@ -25,6 +22,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
 // external
+import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 import { LoginComponent } from './auth/login.component';
@@ -32,20 +30,39 @@ import { RegisterComponent } from './auth/register.component';
 import { MenuComponent } from './menu/menu.component';
 import { IndexComponent } from './index/index.component';
 
+/* IMPORT NGX-CHIPS*/
+// import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // this is needed!
+// import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { TagInputModule } from 'ngx-chips';
 
+
+TagInputModule.withDefaults({
+  tagInput: {
+      placeholder: 'Add a new keyword',
+      secondaryPlaceholder: 'Add a keyword',
+      clearOnBlur : false,
+      addOnBlur : false,
+      editable: false,
+      maxItems:10,
+      ripple : true
+      // add here other default values for tag-input
+  }//,
+  //dropdown: {
+    //  displayBy: 'my-display-value',
+      // add here other default values for tag-input-dropdown
+  //}
+});
 
 @NgModule({
   declarations: [
     AppComponent,
-    ListaProductoComponent,
-    DetalleProductoComponent,
-    NuevoProductoComponent,
-    EditarProductoComponent,
 
     ListUserComponent,
     DetailUserComponent,
     EditUserComponent,
     NewUserComponent,
+    FirstLoginUserComponent,
     
     ListRecipeComponent,
     DetailRecipeComponent,
@@ -62,12 +79,17 @@ import { IndexComponent } from './index/index.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    BrowserAnimationsModule,
-    ToastrModule.forRoot(),
+    CommonModule,
+    BrowserAnimationsModule, // required animations module
+    ToastrModule.forRoot(), // ToastrModule added
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    TagInputModule, 
+    BrowserAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [interceptorProvider],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent,]
 })
 export class AppModule { }

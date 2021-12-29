@@ -53,8 +53,8 @@ export class ListUserComponent implements OnInit {
         this.toastr.success('User deleted', 'OK', {
           timeOut: 3000, positionClass: 'toast-top-center'
         });
-       //this.userLoad();
-       this.router.navigate(['/user-list']);
+       this.userLoad();
+       //this.router.navigate(['./user-list']);
       },
       err => {
         this.toastr.error(err.error.mensaje, 'Fail', {

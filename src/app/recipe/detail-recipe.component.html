@@ -1,31 +1,62 @@
 <app-menu></app-menu>
-<div class="container">
-  <div class="row mt-5" *ngIf="newUser">
-    <div class="col-md-4 mx-auto">
-        <div class="card" style="width: 30rem;">
-            <div class="card-header text-center">
-              User detail
-            </div>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item"><b>Id: </b>{{newUser.id}}</li>
-              <li class="list-group-item"><b>Username: </b>{{newUser.username}}</li>
-              <li class="list-group-item"><b>Firstname: </b>{{newUser.firstname}}</li>
-              <li class="list-group-item"><b>Lastname: </b>{{newUser.lastname}}</li>
-              <li class="list-group-item"><b>Email: </b>{{newUser.email}}</li>
-              <li class="list-group-item"><b>Roles: </b>
-                <p *ngFor="let role of newUser.roles">
-                  - {{role.roleName}}
-                </p>
-              </li>
-            </ul>
-            <div class="card-footer">
-              <!--(click)="volver()"-->
-                <button class="btn btn-outline-primary btn-block" routerLink="/user/list" >
-                  <i class="fas fa-arrow-alt-circle-left"></i> Volver</button>
+<div class="container" *ngIf="recipe">
+  <div class="row mt-10">
+        <div class="col-md-5 mx-auto">
+            <div class="card" style="width: 30rem;">
+                <div class="card-header text-center">
+                  Recipe detail
+                </div>
 
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item"><b>Id: </b>{{recipe.id}}</li>
+                  <li class="list-group-item"><b>Author: </b>{{recipe.user.firstname}} {{recipe.user.lastname}}</li>
+                  <li class="list-group-item"><b>Name: </b>{{recipe.name}}</li>
+                  <li class="list-group-item"><b>Description: </b>{{recipe.description}}</li>
+                  <li class="list-group-item"><b>Creation Date: </b>{{formatDate(recipe.auCreationDate) }}</li>
+                  <li class="list-group-item"><b>Keywords: </b>
+                    <tag-input [ngModel]="recipe.keywords" theme='bootstrap' [disable]="true"  placeholder = "" [ngModelOptions]="{standalone: true}"  [identifyBy]="'id'" [displayBy]="'keyword'" ></tag-input>
+                  </li>
+                </ul>
+                <div class="card-footer">
+                  <!--(click)="volver()"-->
+                    <button class="btn btn-outline-primary btn-block" routerLink="/recipe/list" >
+                      <i class="fas fa-arrow-alt-circle-left"></i> Back to</button>
+
+                </div>
             </div>
+              
+        </div>
+        <div class="col-md-5 mx-auto">
+          <br><br>
+          <div class="form-group input-group-sm ">
+            <label for="selectMultipleKeywords">Comments</label>
+            <figure class="text-center"  *ngFor="let comment of comments">
+                <blockquote class="blockquote be-comment-text" *ngIf="!commentEdit.get(comment.id)">
+                <p>{{comment.comment}}</p>
+                </blockquote>
+                <textarea *ngIf="commentEdit.get(comment.id)" type="text-area" class="form-control" id="editComment_{{comment.id}}" name="editComment_{{comment.id}}" placeholder="Edit comment..." maxlength="500"
+                [(ngModel)]="comment.comment" required></textarea>
+                <button *ngIf="commentEdit.get(comment.id)" type="button" (click)="editComment(comment.id,comment.comment)" class="btn btn-outline-primary btn-block btn-link btn-sm" title="Add comment..."><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+                    <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
+                </svg> Edit comment 
+                </button>
+                <figcaption class="blockquote-footer be-comment-time">
+                <cite title="Source Title">{{(comment.author)}}</cite> - {{formatDate(comment.lastDate)}}   
+                <a *ngIf="(comment.authorId == user.id)" title="Edit" class="btn btn-outline-warning btn-sm" (click)="canEdit(comment.id, true)" role="button"><i class="far fa-edit"></i></a>
+                <a *ngIf="(comment.authorId == user.id)" title="Delete" class="btn btn-outline-danger btn-sm" (click)="deleteOneComment((comment.id)?comment.id:0)"  role="button"><i class="far fa-trash-alt"></i></a>
+                </figcaption>
+                
+ 
+            </figure>
+            <textarea type="text-area" class="form-control" id="newComment" name="newComment" placeholder="Add new comment..." maxlength="500"
+            [(ngModel)]="newComment" required></textarea>
+            <button type="button" (click)="saveComment()" class="btn btn-outline-primary btn-block btn-link btn-sm" title="Add comment..."><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+                <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
+              </svg> Add comment 
+            </button>
           </div>
-          
-    </div>
+        </div>
+  </div>
+
 </div>
-</div>
+

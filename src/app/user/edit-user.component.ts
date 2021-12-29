@@ -4,6 +4,8 @@ import { AuthService } from '../service/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Role } from '../models/role';
+import { RoleService } from '../service/role.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-edit-user',
@@ -16,11 +18,15 @@ export class EditUserComponent implements OnInit {
   newPassword: string;
   newPasswordConfirmation: string;
   role: Role = new Role("");
+  roles: Role[];
   rolesAux : Role[] = [];
+  selectedRoles: string[];
+  spinner: boolean = false;
 
   constructor(
     private authService: AuthService,
     private activatedRoute: ActivatedRoute,
+    private roleService: RoleService,
     private toastr: ToastrService,
     private router: Router
   ) { }
@@ -29,11 +35,10 @@ export class EditUserComponent implements OnInit {
     let paramsAux = this.activatedRoute.snapshot.params;
     
     const id = paramsAux["id"];
-    console.log("id-->",id);
     this.authService.detail(id).subscribe(
       data => {
-        console.log("data-->",data);
         this.user = data;
+        this.rolesLoad();
       },
       err => {
         this.toastr.error(err.error.mensaje, 'Fail', {
@@ -42,40 +47,35 @@ export class EditUserComponent implements OnInit {
         this.router.navigate(['/']);
       }
     );
+    
   }
 
   onUpdate(): void {
     let paramsAux = this.activatedRoute.snapshot.params;
     const id = paramsAux["id"];
     this.user.password = this.newPassword;
-    /*
-    var index = 0;
-    console.log('this.newUser.roles',this.newUser.roles);
-    for(let roleAux of this.newUser.roles){
-      console.log('roroleAuxlesAux',roleAux);
-      this.role = new Role(roleAux.roleName);
-      console.log('role',this.role);
-      //this.rolesAux[index] = this.role;
-      this.rolesAux.push(this.role);
-      
-    } 
-    console.log('rolesAux',this.rolesAux);
-    this.newUser.roles = this.rolesAux;
-    */
-    this.authService.update(id, this.user).subscribe(
+    
+    this.authService.update(id, this.user)
+    .pipe(finalize( () => this.volver()))
+    .subscribe(
       data => {
         this.toastr.success('User updated', 'OK', {
           timeOut: 3000, positionClass: 'toast-top-center'
         });
-        this.router.navigate(['/user-list']);
+        
       },
       err => {
-        this.toastr.error(err.error.mensaje, 'Fail', {
+        this.toastr.error(err.error.mensaje + err.message + err.error + err.path, 'Fail', {
           timeOut: 3000,  positionClass: 'toast-top-center',
         });
         // this.router.navigate(['/']);
       }
     );
+    
+  }
+
+  volver(){
+    this.router.navigate(['/user/list']);
   }
 
   passwordValidation(): void {
@@ -86,6 +86,40 @@ export class EditUserComponent implements OnInit {
         });
       }
     }
+    
+  }
+
+  roleLoad(id:string[]): void{
+    this.user.roles = [];
+    id.forEach(rol => {     
+      this.roleService.detail(Number(rol)).subscribe(
+        data => {
+          this.role = data;
+          this.user.roles.push(data);      
+        },
+        err => {
+          this.toastr.error(err.error.mensaje, 'Fail', {
+            timeOut: 3000,  positionClass: 'toast-top-center',
+          });
+        }
+      );      
+    });
+    
+  }
+
+  rolesLoad(): void {
+    this.roleService.list().subscribe(
+      data => {
+        this.roles = data;
+        this.selectedRoles = [];
+        this.user.roles.forEach(rol => {    
+          this.selectedRoles.push(rol.id.toString());     
+        });
+      },
+      err => {
+        console.log(err);
+      }
+    );
     
   }
 

@@ -1,9 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, KeyValueDiffers, OnInit } from '@angular/core';
 import { User } from '../models/user';
 import { AuthService } from '../service/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Recipe } from '../models/recipe';
+import { TokenService } from '../service/token.service';
+import { RecipeService } from '../service/recipe.service';
+import { Keyword } from '../models/keyword';
+import { KeywordService } from '../service/keyword.service';
+import { CommentService } from '../service/comment.service';
+import { VwCommentService } from '../service/vwcomment.service';
+import { Comment } from '../models/comment';
+import { VwComment } from '../models/vwcomment';
+import { TagModel } from 'ngx-chips/core/tag-model';
+import { finalize } from 'rxjs';
+
 
 @Component({
   selector: 'app-edit-recipe',
@@ -15,77 +26,377 @@ export class EditRecipeComponent implements OnInit {
   user: User = new User("", "", "", "", "", []);
   newPassword: string;
   newPasswordConfirmation: string;
-  role: Recipe = new Recipe(this.user,"","",[]);
+  recipe: Recipe = new Recipe(this.user, "", "", [], []);
+  recipeOld: Recipe = new Recipe(this.user, "", "", [], []);
+  username = '';
+  selectedKeywords: string[];
+  keyword: Keyword = new Keyword("", 1, 0);
+ // selectedComments: string[];
+  comment: Comment = new Comment("", 1, 0);
+  comments: VwComment[];
+  itemsKeywords: Keyword[];
+  keywordsIsEmpty:boolean = false;
+  newComment: string;
+  commentsOld: Comment[];
+  keywordsOld: Keyword[];
+  commentEdit = new Map<number, boolean>();
 
   constructor(
     private authService: AuthService,
+    private recipeService: RecipeService,
+    private keywordService: KeywordService,
+    private commentService: CommentService,
+    private vwCommentService: VwCommentService,
     private activatedRoute: ActivatedRoute,
     private toastr: ToastrService,
-    private router: Router
+    private tokenService: TokenService,
+    private router: Router,
   ) { }
 
+
+
   ngOnInit() {
+    this.username = this.tokenService.getUserName();
     let paramsAux = this.activatedRoute.snapshot.params;
-    
     const id = paramsAux["id"];
-    console.log("id-->",id);
-    this.authService.detail(id).subscribe(
+    this.loadRecipe(id);
+    this.loadComments(id);
+    this.getAuthenticatedUser();
+    this.newComment = '';
+  }
+
+  onUpdate(): void {
+    let paramsAux = this.activatedRoute.snapshot.params;
+    const id = paramsAux["id"];
+    this.keywordsOld = this.recipeOld.keywords;
+    this.deleteOldKeywords();
+
+    this.recipe.auModificationUser = this.user.id;
+
+    
+    this.recipeService.update(id, this.recipe)
+    .pipe(finalize( () => this.volver()))
+    .subscribe(
       data => {
-        console.log("data-->",data);
+        this.toastr.success('Recipe updated', 'OK', {
+          timeOut: 3000, positionClass: 'toast-top-center'
+        });
+        //this.ngOnInit();
+      },
+      err => {
+        this.toastr.error(err.error.mensaje, 'Fail', {
+          timeOut: 3000,  positionClass: 'toast-top-center',
+        });
+        //this.ngOnInit();
+        
+      }
+    );
+    
+    //this.ngOnInit();
+  }
+
+  
+
+  volver(): void {
+    this.router.navigate(['/recipe/list']);
+  }
+
+  getAuthenticatedUser(): void{
+    this.authService.detailUsername(this.username).subscribe(
+      data => {
         this.user = data;
       },
       err => {
         this.toastr.error(err.error.mensaje, 'Fail', {
           timeOut: 3000,  positionClass: 'toast-top-center',
         });
-        this.router.navigate(['/']);
+        //this.router.navigate(['/']);
+        this.volver();
       }
     );
   }
 
-  onUpdate(): void {
-    let paramsAux = this.activatedRoute.snapshot.params;
-    const id = paramsAux["id"];
-    this.user.password = this.newPassword;
-    /*
-    var index = 0;
-    console.log('this.newUser.roles',this.newUser.roles);
-    for(let roleAux of this.newUser.roles){
-      console.log('roroleAuxlesAux',roleAux);
-      this.role = new Role(roleAux.roleName);
-      console.log('role',this.role);
-      //this.rolesAux[index] = this.role;
-      this.rolesAux.push(this.role);
-      
-    } 
-    console.log('rolesAux',this.rolesAux);
-    this.newUser.roles = this.rolesAux;
-    */
-    this.authService.update(id, this.user).subscribe(
+  loadComments(id:number): void{
+    this.vwCommentService.detailRecipeId(id).subscribe(
       data => {
-        this.toastr.success('User updated', 'OK', {
-          timeOut: 3000, positionClass: 'toast-top-center'
-        });
-        this.router.navigate(['/user-list']);
+        this.comments = data;
+        
+        for (let i = 0; i < this.comments.length; i++) {
+          var comment:VwComment = this.comments[i];
+          this.commentEdit.set(comment.id, false);
+        }
+      },
+      err => {
+        if (err.error.mensaje !== 'It does not exist') {
+          this.toastr.error(err.error.mensaje, 'Fail', {
+            timeOut: 3000,  positionClass: 'toast-top-center',
+          });
+        } else {
+          console.log("ERROR -->",err.error.mensaje);
+          
+        }
+      }
+    );
+  }
+
+  canEdit(id:number, option:boolean) : void{
+    let isDeleted = this.commentEdit.delete(id);
+    this.commentEdit.set(id, true);
+  }
+
+
+/*
+  getUserName(id:number): string {
+    var nameComplete: string = "";
+    console.log("id",id);
+    this.authService.detail(id).subscribe(
+      data => {
+        this.user = data;
+        nameComplete =  this.user.firstname.concat(" ").concat(this.user.lastname);
+        console.log("nameComplete",nameComplete);
+        return nameComplete;
       },
       err => {
         this.toastr.error(err.error.mensaje, 'Fail', {
           timeOut: 3000,  positionClass: 'toast-top-center',
         });
-        // this.router.navigate(['/']);
+        //this.router.navigate(['/']);
+        //this.volver();
+      }
+    );
+    return nameComplete;
+  }
+*/
+  loadRecipe(id:number) : void{
+    this.recipeService.detail(id).subscribe(
+      data => {
+        this.recipe = data;
+        this.recipeOld = data;
+        this.keywordsIsEmpty = (this.recipe.keywords.length===0);
+      },
+      err => {
+        this.toastr.error(err.error.mensaje, 'Fail', {
+          timeOut: 3000,  positionClass: 'toast-top-center',
+        });
+        
+        //this.router.navigate(['/']);
+        this.volver();
       }
     );
   }
 
-  passwordValidation(): void {
-    if (this.newPassword.length != 0 && this.newPasswordConfirmation.length != 0){
-      if (this.newPassword != this.newPasswordConfirmation){
-        this.toastr.error('The fields for the new password and the new password confirmation must be identical.', 'Fail', {
+  onTagAdded(event: TagModel): void {
+    var keywordAuxObj:any = {}
+    keywordAuxObj = event;
+    var propertyValue: string = "";
+    propertyValue = keywordAuxObj.keyword;
+    var keywordAux = new Keyword(propertyValue, this.user.id, Date.now());
+    this.recipe.keywords.push(keywordAux);
+    this.keywordsIsEmpty = (this.recipe.keywords.length===0);
+    //console.log("add - keywordsIsEmpty->",this.keywordsIsEmpty);
+    //console.log("add - this.recipe.keywords->",this.recipe.keywords);
+  }
+
+  onTagRemoved(event: TagModel): void {
+    var keywordAuxObj:any = {}
+    keywordAuxObj = event;
+    var propertyValue: string = "";
+    propertyValue = keywordAuxObj.id;
+    var keywordAux = new Keyword(propertyValue, this.user.id, keywordAuxObj.auCreationDate);
+    var i = this.recipe.keywords.indexOf(keywordAuxObj.id.toString());
+    //console.log("remove - >",i)
+    this.recipe.keywords.splice(i);
+    this.keywordsIsEmpty = (this.recipe.keywords.length===0);
+   // console.log("remove - keywordsIsEmpty->",this.keywordsIsEmpty);
+    //console.log("remove -this.recipe.keywords->",this.recipe.keywords);
+  }
+
+  editComment(id:number, comment:string) : void {
+      this.canEdit(id, false);
+      this.comment.comment = comment;
+      this.comment.auCreationUser = this.user.id;
+      this.comment.auCreationDate = Date.now();
+      this.commentService.update(id, this.comment)
+      .pipe(finalize( () => this.ngOnInit()))
+      .subscribe(
+        data => {
+          this.toastr.success('Comment updated', 'OK', {
+            timeOut: 3000, positionClass: 'toast-top-center'
+          });
+        },
+        err => {
+          this.toastr.error(err.error.mensaje, 'Fail', {
+            timeOut: 3000,  positionClass: 'toast-top-center',
+          });
+        }
+      );
+  
+  }
+
+  saveComment():void {
+    //alert("hola-->"+this.newComment);
+    //alert("user.id-->"+this.user.id);
+
+    this.comment.comment = this.newComment;
+    this.comment.auCreationUser = this.user.id;
+    this.comment.auCreationDate = Date.now();
+    this.commentsOld = this.recipeOld.comments;
+    this.recipeOld.comments.push(this.comment);
+
+    let paramsAux = this.activatedRoute.snapshot.params;
+    const id = paramsAux["id"];
+    this.recipeOld.auModificationUser = this.user.id;
+
+    this.deleteOldComments();
+    
+    this.recipeService.update(id, this.recipeOld)
+    .pipe(finalize( () => this.ngOnInit()))
+    .subscribe(
+      data => {
+        
+        this.toastr.success('Recipe Comment updated', 'OK', {
+          timeOut: 3000, positionClass: 'toast-top-center'
+        });
+        
+      },
+      err => {
+        this.toastr.error(err.error.mensaje, 'Fail', {
           timeOut: 3000,  positionClass: 'toast-top-center',
         });
+        
       }
+    );
+
+
+
+/*
+    this.commentService.save(this.comment)
+    .pipe(finalize( () =>  this.ngOnInit()))
+    .subscribe(
+      data => {
+        this.toastr.success('Comment created', 'OK', {
+          timeOut: 3000, positionClass: 'toast-top-center'
+        });
+        
+      },
+      err => {
+        this.toastr.error(err.error.mensaje, 'Fail', {
+          timeOut: 3000,  positionClass: 'toast-top-center',
+        });
+        this.ngOnInit();
+      }
+    );
+    */
+  }
+
+  deleteOldComments() :void{
+    for (let i = 0; i < this.commentsOld.length; i++) {
+      var comment:Comment = this.commentsOld[i];
+      this.deleteComment(comment.id, 1);
     }
+  }
+
+  deleteOneComment(id:number) :void{
+    this.deleteComment(id, 2);
+  }
+
+  deleteComment(id:number, type:number) : void {
+    this.commentService.delete(id).subscribe(
+      data => {
+        if (type === 2){
+          this.toastr.success('Comment deleted', 'OK', {
+            timeOut: 3000, positionClass: 'toast-top-center'
+          });
+          window.location.reload();
+        }
+      },
+      err => {
+        console.log("ERROR",err.error.mensaje);
+        this.ngOnInit();
+      }
+    );  
+  }
+
+  
+  deleteOldKeywords() :void{
+    for (let i = 0; i < this.keywordsOld.length; i++) {
+      var keyword:Keyword = this.keywordsOld[i];
+      this.deleteKeyword(keyword.id, 1);
+    }
+  }
+
+  deleteKeyword(id:number, type:number) : void {
+    this.keywordService.delete(id).subscribe(
+      data => {
+        if (type === 2){
+          this.toastr.success('Keyword deleted', 'OK', {
+            timeOut: 3000, positionClass: 'toast-top-center'
+          });
+          this.ngOnInit();
+        }
+      },
+      err => {
+        console.log("ERROR",err.error.mensaje);
+      }
+    );  
+  }
+
+/*
+  loadKeyword(id:number) : void{
+    this.keywordService.detail(id).subscribe(
+      data => {
+        this.keyword = data;
+      },
+      err => {
+        this.toastr.error(err.error.mensaje, 'Fail', {
+          timeOut: 3000,  positionClass: 'toast-top-center',
+        });
+        //this.router.navigate(['/']);
+        this.volver();
+      }
+    );
+  }
+
+  keywordLoad(id:string[]): void{
+    this.recipe.keywords = [];
+    id.forEach(rol => {     
+      this.keywordService.detail(Number(rol)).subscribe(
+        data => {
+          this.keyword = data;
+          this.recipe.keywords.push(data);      
+        },
+        err => {
+          this.toastr.error(err.error.mensaje, 'Fail', {
+            timeOut: 3000,  positionClass: 'toast-top-center',
+          });
+        }
+      );      
+    });
     
+  }
+*/
+  commentLoad(id:string[]): void{
+    this.recipe.comments = [];
+    id.forEach(comment => {     
+      this.commentService.detail(Number(comment)).subscribe(
+        data => {
+          this.comment = data;
+          this.recipe.comments.push(data);      
+        },
+        err => {
+          this.toastr.error(err.error.mensaje, 'Fail', {
+            timeOut: 3000,  positionClass: 'toast-top-center',
+          });
+        }
+      );      
+    });
+    
+  }
+
+  formatDate (dateNumber: number): string{
+    var date = new Date(dateNumber);
+    // https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_tolocalestring_date_all
+    return date.toLocaleString('sv-SE', { timeZone: 'UTC' });
   }
 
 }

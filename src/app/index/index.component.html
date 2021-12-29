@@ -1,11 +1,16 @@
 
-<app-menu ></app-menu>
-<app-lista-producto *ngIf="isLogged;"></app-lista-producto>
-<div class="container text-center">
+<app-list-recipe *ngIf="isLogged && !isFirstLogin;"></app-list-recipe>
+<app-first-login-user *ngIf="isLogged && isFirstLogin"></app-first-login-user>
+<app-login *ngIf="!isLogged;"></app-login>
+
+
+<!--
+<div class="container ">
     <div *ngIf="isLogged; else loggedOut">
-        
-        hola
-        
+        <app-lista-producto *ngIf="isLogged;"></app-lista-producto>
     </div>
-    <ng-template #loggedOut> adios</ng-template>
+    <ng-template #loggedOut>
+        <app-login *ngIf="!isLogged;"></app-login>
+    </ng-template>
 </div>
+-->

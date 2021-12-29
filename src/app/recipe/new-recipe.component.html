@@ -1,56 +1,53 @@
 <app-menu></app-menu>
-<div class="container">
-    <div class="row mt-5">
-        <div class="col-md-4 mx-auto">
+<div class="container" *ngIf="recipe">
+    <div class="row mt-10">
+        <div class="col-md-6 mx-auto">
             <form (ngSubmit)="onCreate()" novalidate #f="ngForm">
                 <!--<div class="form-group input-group-sm">
-                    <label for="id">id</label>
+                    <label for="id">Id</label>
                     <input type="text" class="form-control" id="id" name="nombre" disabled
-                    [(ngModel)]="newUser.id" required>
+                    [(ngModel)]="recipe.id" required >
+                </div>
+                <div class="form-group input-group-sm">
+                    <label for="author">Author</label>
+                    <input type="text" class="form-control" id="author" name="author" disabled
+                    [(ngModel)]="recipe.user.firstname+' '+recipe.user.lastname " required>
                 </div>-->
                 <div class="form-group input-group-sm">
-                    <label for="username">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" maxlength="50"
-                    [(ngModel)]="newUser.username" required>
+                    <label for="name">Name <strong class="required"> *</strong></label>
+                    <input  class="form-control" id="name" name="name" maxlength="150"
+                    [(ngModel)]="recipe.name" required>
+                    <!--<div class="invalid-feedback">
+                        Please choose a username.
+                      </div>-->
                 </div>
                 <div class="form-group input-group-sm">
-                    <label for="firstname">Firstname</label>
-                    <input type="text" class="form-control" id="firstname" name="firstname"  maxlength="150"
-                    [(ngModel)]="newUser.firstname" >
-                </div>
-                <div class="form-group input-group-sm">
-                    <label for="lastname">Lastname</label>
-                    <input type="text" class="form-control" id="lastname" name="lastname" maxlength="300"
-                    [(ngModel)]="newUser.lastname" >
-                </div>
-                <div class="form-group input-group-sm">
-                    <label for="userEmail">Email</label>
-                    <input type="text" class="form-control" id="userEmail" name="userEmail"  maxlength="300"
-                    [(ngModel)]="newUser.email" required>
+                    <label for="description">Description <strong class="required"> *</strong></label>
+                    <textarea type="text-area" class="form-control" id="description" name="description" maxlength="1500"
+                    [(ngModel)]="recipe.description" required></textarea>
                 </div>
 
-                <div class="form-group ">
-                    <label for="selectMultipleRoles">Roles</label>
-                    <select multiple class="form-control" id="selectMultipleRoles" [(ngModel)]="selectedRoles" [ngModelOptions]="{standalone: true}" 
-                        (change)="roleLoad(selectedRoles)"
-                        required> 
-                        <option  *ngFor="let role of roles" value="{{role.id}}" >
-                            {{role.roleName}}
-                          </option>
-                          <!---->
-                    </select>
-                  </div>
+                <div class="form-group input-group-sm">
+                    <label for="keywords">Keywords <strong class="required"> *</strong></label>
+                    <tag-input [ngModel]="recipe.keywords" [maxItems]='5' theme='bootstrap' [ngModelOptions]="{standalone: true}"  [identifyBy]="'id'"
+                        [displayBy]="'keyword'" (onAdd)="onTagAdded($event)" 
+                            (onRemove)="onTagRemoved($event)" required></tag-input>
 
-                <!--
-                <div class="form-group">
-                    <input type="password" name="password" id="password" class="form-control"
-                    [(ngModel)]="newUser.password" required>
-                </div>-->
-                <button class="btn btn-outline-success btn-block" [disabled]="!f.valid">
-                    <i class="fas fa-plus-circle"></i> Create</button>
-                <button class="btn btn-outline-primary btn-block" routerLink="/user/list">
+                    <!--
+                            itemsAsObjects = [{id: 0, name: 'Angular'}, {id: 1, name: 'React'}];
+                        <tag-input [ngModel]="itemsAsObjects" theme='bootstrap' name="'name'" [identifyBy]="'id'" [displayBy]="'name'" ></tag-input>
+                    -->
+                </div>
+                <br><br>
+                <button class="btn btn-outline-success btn-block" [disabled]="!f.valid || keywordsIsEmpty">
+                    <i class="fas fa-pencil-alt"></i> Add</button>
+
+
+                <br>
+                <button class="btn btn-outline-primary btn-block" routerLink="/recipe/list">
                     <i class="fas fa-arrow-alt-circle-left"></i> Back to</button>
             </form>
         </div>
+
     </div>
 </div>
