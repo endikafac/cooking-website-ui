@@ -10,4 +10,9 @@ export class Keyword {
         this.auCreationDate = auCreationDate;
     }
 
+    toString() : string{
+        var result = this.keyword;
+        return result;
+    }
+
 }

@@ -45,6 +45,7 @@ TagInputModule.withDefaults({
       addOnBlur : false,
       editable: false,
       maxItems:10,
+      allowDupes: false,
       ripple : true
       // add here other default values for tag-input
   }//,

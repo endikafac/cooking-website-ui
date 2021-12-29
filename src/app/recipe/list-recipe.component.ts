@@ -6,8 +6,10 @@ import { RecipeService } from '../service/recipe.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../service/auth.service';
 import { User } from '../models/user';
-import { finalize } from 'rxjs';
+import { finalize, Observable } from 'rxjs';
 import { RecipeFilter } from '../models/recipe-filter';
+import { KeywordService } from '../service/keyword.service';
+import { Keyword } from '../models/keyword';
 
 @Component({
   selector: 'app-list-recipe',
@@ -17,6 +19,7 @@ import { RecipeFilter } from '../models/recipe-filter';
 export class ListRecipeComponent implements OnInit {
 
   recipes: Recipe[] = [];
+  keywords: Keyword[] = [];
   roles: string[];
   isAdmin = false;
   isChef = false;
@@ -27,10 +30,12 @@ export class ListRecipeComponent implements OnInit {
   maxLengthDescription : number = 250;
   filter: string;
   recipeFilter: RecipeFilter = new RecipeFilter("");
-  
+  recipeFilters: RecipeFilter[] = [];
+  selectedKeywords: string[];
 
   constructor(
     private recipeService: RecipeService,
+    private keywordService: KeywordService,
     private toastr: ToastrService,
     private tokenService: TokenService,
     private router: Router,
@@ -44,7 +49,8 @@ export class ListRecipeComponent implements OnInit {
     this.username = this.tokenService.getUserName();
     this.loadUser();
     this.roles = this.tokenService.getAuthorities();
-    
+    this.loadKeywords();
+
     this.roles.forEach(rol => {
       if (rol === 'ROLE_ADMIN') {
         this.isAdmin = true;
@@ -60,10 +66,10 @@ export class ListRecipeComponent implements OnInit {
     
   }
 
-  searchByFilter(){
+  searchByFilter(): void{
     this.recipeFilter = new RecipeFilter(this.filter);
-    console.log("filter",this.filter);
-    console.log("recipeFilter",this.recipeFilter);
+    //console.log("filter",this.filter);
+    //console.log("recipeFilter",this.recipeFilter);
     this.recipeService.search(this.recipeFilter)
     //.pipe(finalize( () => this.ngOnInit()))
     .subscribe(
@@ -74,6 +80,46 @@ export class ListRecipeComponent implements OnInit {
         console.log(err);
       }
     );
+  }
+
+  searchByKeywords(): void{
+    this.recipeFilters = []
+    console.log("selectedKeywords",this.selectedKeywords);
+    this.selectedKeywords.forEach(keywordIdStr => {
+      this.recipeFilter = new RecipeFilter(keywordIdStr);
+      this.recipeFilters.push(this.recipeFilter);
+    });
+
+
+    
+    console.log("filter",this.filter);
+    console.log("recipeFilters",this.recipeFilters);
+    if (this.recipeFilters.length !== 0) {
+      this.recipeService.searchByKeywordId(this.recipeFilters)
+      //.pipe(finalize( () => this.ngOnInit()))
+      .subscribe(
+        data => {
+          this.recipes = data;
+        },
+        err => {
+          console.log(err);
+        }
+      );
+    } else {
+      this.recipesLoad();
+    }
+    
+  }
+
+  loadKeywords(): void {
+    this.keywordService.list().subscribe(
+      data => {
+        this.keywords = data;
+      },
+      err => {
+        console.log("ERROR",err.error.mensaje);
+      }
+    );  
   }
 
   recipesLoad(): void {

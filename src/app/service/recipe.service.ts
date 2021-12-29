@@ -41,4 +41,14 @@ export class RecipeService {
     return this.httpClient.post<any>(this.url + 'search', recipeFilter);
   }
 
+  public searchByKeyword(recipeFilters: RecipeFilter[]): Observable<any> {
+    return this.httpClient.post<any>(this.url + 'searchByKeyword', recipeFilters);
+  }
+
+  public searchByKeywordId(recipeFilters: RecipeFilter[]): Observable<any> {
+    return this.httpClient.post<any>(this.url + 'searchByKeywordId', recipeFilters);
+  }
+  
+
+  
 }
