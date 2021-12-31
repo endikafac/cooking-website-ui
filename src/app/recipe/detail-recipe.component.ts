@@ -128,8 +128,10 @@ export class DetailRecipeComponent implements OnInit {
   editComment(id:number, comment:string) : void {
     this.canEdit(id, false);
     this.comment.comment = comment;
-    this.comment.auCreationUser = this.user.id;
-    this.comment.auCreationDate = Date.now();
+    //this.comment.auCreationUser = this.user.id;
+    //this.comment.auCreationDate = Date.now();
+    this.comment.auModificationUser = this.user.id;
+    this.comment.auModificationDate = Date.now();
     this.commentService.update(id, this.comment)
     .pipe(finalize( () => this.ngOnInit()))
     .subscribe(

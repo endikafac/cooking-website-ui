@@ -88,9 +88,10 @@ export class EditUserComponent implements OnInit {
     }
     
   }
-
+/*
   roleLoad(id:string[]): void{
     this.user.roles = [];
+    console.log("id",id);
     id.forEach(rol => {     
       this.roleService.detail(Number(rol)).subscribe(
         data => {
@@ -104,6 +105,25 @@ export class EditUserComponent implements OnInit {
         }
       );      
     });
+    
+  }
+  */
+  roleLoad(id:string[]): void{
+    this.user.roles = [];
+    console.log("id",id);
+    console.log("this.user.roles",this.user.roles);
+      this.roleService.detail(Number(id)).subscribe(
+        data => {
+          this.role = data;
+          this.user.roles.push(data);      
+          console.log("this.user.roles",this.user.roles);
+        },
+        err => {
+          this.toastr.error(err.error.mensaje, 'Fail', {
+            timeOut: 3000,  positionClass: 'toast-top-center',
+          });
+        }
+      );      
     
   }
 

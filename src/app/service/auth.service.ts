@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { User } from '../models/user';
 import { Observable } from 'rxjs';
 import { LoginUser } from "../models/login-user";
 import { JwtDTO } from '../models/jwt-dto';
+import { HttpClient } from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  url = 'http://localhost:8080/auth/';
+  url = 'https://localhost:8443/auth/';
+  //url = 'http://localhost:8080/auth/';
 
   constructor(private httpClient: HttpClient) { }
 

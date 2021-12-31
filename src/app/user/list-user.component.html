@@ -14,9 +14,15 @@
     </div>
   
   </div>
-  <div class="mt-3" *ngIf="isAdmin">
-    <a *ngIf="isAdmin" title="New User" class="btn btn-outline-success btn-sm" routerLink="/user/new"  role="button"><i class="far plus-circle"></i> New user</a>
+  <div class="row" *ngIf="isAdmin">
+    <div class="col text-left">
+        <a title="New User" class="btn btn-outline-success btn-sm" routerLink="/user/new"  role="button"><i class="far plus-circle"></i> New user</a>
+    </div>
+    <div class="col text-right">
+        <p> Users number: {{users.length}}</p>
+    </div>
   </div>
+  
   <div class="table-responsive-sm ">
     <table class="table  table-light table-striped table-hover table-sm ">
       <!--<caption>List of user</caption>-->
@@ -25,14 +31,14 @@
           <th scope="col">Id</th>
           <th scope="col">Username</th>
           <th scope="col">Firstname</th>
-          <th scope="col">Lasname</th>
+          <th scope="col">Lastname</th>
           <th scope="col">Email</th>
           <th scope="col">Roles</th>
           <th scope="col">Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let user of users">
+        <tr *ngFor="let user of users" class="{{(user.auActive)?'table-success':'table-danger'}}">
           <td>{{user.id}}</td>
           <td>{{user.username}}</td>
           <td>{{user.firstname}}</td>
@@ -42,11 +48,24 @@
           <td>
             <a title="Show" class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" routerLink="/user/detail/{{user.id}}"  role="button"><i class="far fa-eye"></i></a>
             <a *ngIf="isAdmin" title="Edit" class="btn btn-outline-warning btn-sm" routerLink="/user/edit/{{user.id}}"  role="button"><i class="far fa-edit"></i></a>
-            <a *ngIf="isAdmin" title="Delete" class="btn btn-outline-danger btn-sm" (click)="delete((user.id)?user.id:0)"  role="button"><i class="far fa-trash-alt"></i></a>
+            <a *ngIf="isAdmin && canBePhysicallyRemoved(user.id)" title="Delete" class="btn btn-outline-danger btn-sm" (click)="delete((user.id)?user.id:0)"  role="button"><i class="far fa-trash-alt"></i></a>
+            <a *ngIf="isAdmin && user.auActive" title="Disable" class="btn btn-outline-danger btn-sm" (click)="disable(((user.id)?user.id:0),user)"  role="button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-x-fill" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm6.146-2.854a.5.5 0 0 1 .708 0L14 6.293l1.146-1.147a.5.5 0 0 1 .708.708L14.707 7l1.147 1.146a.5.5 0 0 1-.708.708L14 7.707l-1.146 1.147a.5.5 0 0 1-.708-.708L13.293 7l-1.147-1.146a.5.5 0 0 1 0-.708z"/>
+              </svg>
+            </a>
+            <a *ngIf="isAdmin && !user.auActive" title="Enable" class="btn btn-outline-danger btn-sm" (click)="enable(((user.id)?user.id:0),user)"  role="button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus-fill" viewBox="0 0 16 16">
+                <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+              </svg>
+            </a>
+            
           </td>
         </tr>
       </tbody>
     </table>
+    <!--
     <ul class="pagination pagination-sm">
       <li class="page-item active">
         <a class="page-link" href="#" aria-label="Previous">
@@ -62,6 +81,7 @@
         </a>
       </li>
     </ul>
+    -->
   </div>
   <div id="liveAlertPlaceholder"></div>
 </div>

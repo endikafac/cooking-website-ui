@@ -9,7 +9,8 @@ import { RecipeFilter } from '../models/recipe-filter';
 })
 export class RecipeService {
 
-  url = 'http://localhost:8080/recipe/';
+  url = 'https://localhost:8443/recipe/';
+ // url = 'http://localhost:8080/recipe/';
 
   constructor(private httpClient: HttpClient) { }
 
@@ -47,6 +48,10 @@ export class RecipeService {
 
   public searchByKeywordId(recipeFilters: RecipeFilter[]): Observable<any> {
     return this.httpClient.post<any>(this.url + 'searchByKeywordId', recipeFilters);
+  }
+  
+  public checkIfUserHasOwnRecipesOrComments(recipeFilter: RecipeFilter): Observable<any> {
+    return this.httpClient.post<any>(this.url + 'checkIfUserHasOwnRecipesOrComments', recipeFilter);
   }
   
 

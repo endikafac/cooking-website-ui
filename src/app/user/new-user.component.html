@@ -30,25 +30,17 @@
                 </div>
 
                 <div class="form-group ">
-                    <label for="selectMultipleRoles">Roles<strong class="required"> *</strong></label>
-                    <select multiple class="form-control" id="selectMultipleRoles" [(ngModel)]="selectedRoles" [ngModelOptions]="{standalone: true}" 
-                        (change)="roleLoad(selectedRoles)"
-                        required> 
-                        <option  *ngFor="let role of roles" value="{{role.id}}" >
-                            {{role.roleName}}
-                          </option>
-                          <!---->
+                    <label for="selectMultipleRoles">Roles<strong class="required"> *</strong></label><br>
+                    <select class="form-control  form-select-sm mb-3" aria-label=".form-select-sm role" [(ngModel)]="selectedRoles" [ngModelOptions]="{standalone: true}"
+                    (change)="roleLoad(selectedRoles)">
+                        <option *ngFor="let role of roles" value="{{role.id}}">{{role.roleName}}</option>
                     </select>
+
                   </div>
                   <div class="d-flex align-items-center" *ngIf="spinner">
                     <strong>Creating...</strong>
                     <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
                   </div>
-                <!--
-                <div class="form-group">
-                    <input type="password" name="password" id="password" class="form-control"
-                    [(ngModel)]="newUser.password" required>
-                </div>-->
                 <button class="btn btn-outline-success btn-block" [disabled]="!f.valid">
                     <i class="fas fa-plus-circle"></i> Create</button>
                 <button class="btn btn-outline-primary btn-block" routerLink="/user/list">

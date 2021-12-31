@@ -21,7 +21,6 @@ export class FirstLoginUserComponent implements OnInit {
   rolesAux : Role[] = [];
   username = '';
   isFirstLogin: boolean = false;
-  isRegisterInLogin: boolean = false;
   
   constructor(
     private authService: AuthService,
@@ -41,10 +40,15 @@ export class FirstLoginUserComponent implements OnInit {
     //let paramsAux = this.activatedRoute.snapshot.params;
     const id = this.user.id;
     console.log("this.newPassword",this.newPassword);
-    if (this.newPassword){
+    if (this.newPassword && !this.user.auActive){
+      console.log("ENTRA");
       this.user.password = this.newPassword;
+      this.user.auActive = true;
+    } else {
+      console.log("NO ENTRA");
+      this.user.password = '';
     }
-    
+    console.log("this.user.password",this.user.password);
     this.user.lastConnection = this.formatDate();
     this.authService.update(id, this.user).subscribe(
       data => {
@@ -94,12 +98,12 @@ export class FirstLoginUserComponent implements OnInit {
         this.user = data;
         if (this.user.lastConnection !== null) {
           this.isFirstLogin = true;
+          
         }
         console.log("this.user.firstname",this.user.firstname);
         console.log("this.user.lastname",this.user.lastname);
-        if (this.user.firstname === '' && this.user.lastname === '') {
-          this.isRegisterInLogin = true;
-        }
+        console.log("this.user.auActive",this.user.auActive);
+
       },
       err => {
         console.log("err.error.mensaje-->",err.error.mensaje);

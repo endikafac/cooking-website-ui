@@ -8,6 +8,7 @@ export class User {
     email: string;
     password: string;
     lastConnection: string;
+    auActive : boolean;
     roles: Role[];
 
     constructor(username: string, email: string, password: string, firstname: string, lastname: string, roles: Role[]) {

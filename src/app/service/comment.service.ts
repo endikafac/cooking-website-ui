@@ -8,7 +8,8 @@ import { Observable } from 'rxjs';
 })
 export class CommentService {
 
-  url = 'http://localhost:8080/comment/';
+  url = 'https://localhost:8443/comment/';
+  //url = 'http://localhost:8080/comment/';
 
   constructor(private httpClient: HttpClient) { }
 

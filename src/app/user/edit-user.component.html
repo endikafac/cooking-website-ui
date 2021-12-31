@@ -31,25 +31,31 @@
                     <input type="text" class="form-control" id="userEmail1" name="userEmail1" maxlength="300"
                     [(ngModel)]="user.email" required>
                 </div>
-                <div class="form-group input-group-sm">
+                <div class="form-group input-group-sm" *ngIf="!user.auActive">
                     <label for="newPassword">New Password</label>
                     <input type="password" class="form-control" id="newPassword" name="newPassword" (change)="passwordValidation()" maxlength="100"
                     [(ngModel)]="newPassword" >
                 </div>
-                <div class="form-group input-group-sm">
+                <div class="form-group input-group-sm" *ngIf="!user.auActive">
                     <label for="newPasswordConfirmation">New Password Confirmation</label>
                     <input type="password" class="form-control" id="newPasswordConfirmation" name="newPasswordConfirmation" (change)="passwordValidation()" maxlength="100"
                     [(ngModel)]="newPasswordConfirmation" >
                 </div>
                 
-                <div class="form-group ">
-                    <label for="selectMultipleRoles">Roles<strong class="required"> *</strong></label>
+                <div class="form-group input-group-sm">
+                    <label for="selectMultipleRoles">Roles<strong class="required"> *</strong></label><br>
+                    <!--
                     <select multiple class="form-control" id="selectMultipleRoles" [(ngModel)]="selectedRoles" [ngModelOptions]="{standalone: true}" 
                         (change)="roleLoad(selectedRoles)"
                         required> 
-                        <option  *ngFor="let role of roles" value="{{role.id}}" >
+                        <option *ngFor="let role of roles" value="{{role.id}}"  >
                             {{role.roleName}}
                           </option>
+                    </select>-->
+                    <select class="form-control  form-select-sm mb-3" aria-label=".form-select-sm role" [(ngModel)]="selectedRoles" [ngModelOptions]="{standalone: true}"
+                    (change)="roleLoad(selectedRoles)">
+                        <!--<option selected>Select a role</option>-->
+                        <option *ngFor="let role of roles" value="{{role.id}}">{{role.roleName}}</option>
                     </select>
                   </div>
 

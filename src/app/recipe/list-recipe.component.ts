@@ -67,11 +67,9 @@ export class ListRecipeComponent implements OnInit {
   }
 
   searchByFilter(): void{
+    this.selectedKeywords = [];
     this.recipeFilter = new RecipeFilter(this.filter);
-    //console.log("filter",this.filter);
-    //console.log("recipeFilter",this.recipeFilter);
     this.recipeService.search(this.recipeFilter)
-    //.pipe(finalize( () => this.ngOnInit()))
     .subscribe(
       data => {
         this.recipes = data;
@@ -83,20 +81,20 @@ export class ListRecipeComponent implements OnInit {
   }
 
   searchByKeywords(): void{
+    this.filter ='';
     this.recipeFilters = []
-    console.log("selectedKeywords",this.selectedKeywords);
     this.selectedKeywords.forEach(keywordIdStr => {
-      this.recipeFilter = new RecipeFilter(keywordIdStr);
+      let keywordAux = this.keywords.find(keyword => (keyword.id).toString() === keywordIdStr);
+      let stringKeyword =  '';
+      if (keywordAux){
+        stringKeyword = keywordAux.keyword;
+      }
+      this.recipeFilter = new RecipeFilter(stringKeyword);
       this.recipeFilters.push(this.recipeFilter);
     });
-
-
     
-    console.log("filter",this.filter);
-    console.log("recipeFilters",this.recipeFilters);
     if (this.recipeFilters.length !== 0) {
-      this.recipeService.searchByKeywordId(this.recipeFilters)
-      //.pipe(finalize( () => this.ngOnInit()))
+      this.recipeService.searchByKeyword(this.recipeFilters)
       .subscribe(
         data => {
           this.recipes = data;
@@ -112,7 +110,7 @@ export class ListRecipeComponent implements OnInit {
   }
 
   loadKeywords(): void {
-    this.keywordService.list().subscribe(
+    this.keywordService.listDistinct().subscribe(
       data => {
         this.keywords = data;
       },
@@ -134,6 +132,8 @@ export class ListRecipeComponent implements OnInit {
   }
 
   delete(id: number) {
+    this.filter ='';
+    this.selectedKeywords = [];
     this.recipeService.delete(id).subscribe(
       data => {
         this.toastr.success('Recipe deleted', 'OK', {

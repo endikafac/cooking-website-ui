@@ -60,6 +60,10 @@ export class EditRecipeComponent implements OnInit {
     let paramsAux = this.activatedRoute.snapshot.params;
     const id = paramsAux["id"];
     this.loadRecipe(id);
+    //this.commentsOld = this.recipeOld.comments;
+    //this.keywordsOld = this.recipeOld.keywords;
+
+    console.log("this.recipeOld.keywords",this.recipeOld.keywords);
     this.loadComments(id);
     this.getAuthenticatedUser();
     this.newComment = '';
@@ -68,33 +72,37 @@ export class EditRecipeComponent implements OnInit {
   onUpdate(): void {
     let paramsAux = this.activatedRoute.snapshot.params;
     const id = paramsAux["id"];
-    this.keywordsOld = this.recipeOld.keywords;
-    this.deleteOldKeywords();
 
+  //  this.keywordsOld = this.recipeOld.keywords;
+    console.log("this.recipeOld.keywords",this.recipeOld.keywords);
+    console.log("this.recipe.keywords",this.recipe.keywords);
+    //this.deleteOldKeywords();
+    //this.recipe.user = this.user;
     this.recipe.auModificationUser = this.user.id;
-
+    
     
     this.recipeService.update(id, this.recipe)
-    .pipe(finalize( () => this.volver()))
+    .pipe(finalize( () => this.clean()))
     .subscribe(
       data => {
+        
         this.toastr.success('Recipe updated', 'OK', {
           timeOut: 3000, positionClass: 'toast-top-center'
         });
-        //this.ngOnInit();
+        
       },
       err => {
         this.toastr.error(err.error.mensaje, 'Fail', {
           timeOut: 3000,  positionClass: 'toast-top-center',
-        });
-        //this.ngOnInit();
-        
+        });       
       }
     );
-    
-    //this.ngOnInit();
   }
 
+  clean(): void {
+    this.cleanKeyword();
+    this.router.navigate(['/recipe/list']);
+  }
   
 
   volver(): void {
@@ -172,6 +180,7 @@ export class EditRecipeComponent implements OnInit {
       data => {
         this.recipe = data;
         this.recipeOld = data;
+        console.log("this.recipeOld",this.recipeOld);
         this.keywordsIsEmpty = (this.recipe.keywords.length===0);
       },
       err => {
@@ -214,8 +223,10 @@ export class EditRecipeComponent implements OnInit {
   editComment(id:number, comment:string) : void {
       this.canEdit(id, false);
       this.comment.comment = comment;
-      this.comment.auCreationUser = this.user.id;
-      this.comment.auCreationDate = Date.now();
+      //this.comment.auCreationUser = this.user.id;
+      //this.comment.auCreationDate = Date.now();
+      this.comment.auModificationUser = this.user.id;
+      this.comment.auModificationDate = Date.now();
       this.commentService.update(id, this.comment)
       .pipe(finalize( () => this.ngOnInit()))
       .subscribe(
@@ -234,21 +245,15 @@ export class EditRecipeComponent implements OnInit {
   }
 
   saveComment():void {
-    //alert("hola-->"+this.newComment);
-    //alert("user.id-->"+this.user.id);
-
+    this.deleteOldComments();
     this.comment.comment = this.newComment;
     this.comment.auCreationUser = this.user.id;
     this.comment.auCreationDate = Date.now();
-    this.commentsOld = this.recipeOld.comments;
     this.recipeOld.comments.push(this.comment);
 
     let paramsAux = this.activatedRoute.snapshot.params;
     const id = paramsAux["id"];
     this.recipeOld.auModificationUser = this.user.id;
-
-    this.deleteOldComments();
-    
     this.recipeService.update(id, this.recipeOld)
     .pipe(finalize( () => this.ngOnInit()))
     .subscribe(
@@ -290,13 +295,18 @@ export class EditRecipeComponent implements OnInit {
   }
 
   deleteOldComments() :void{
-    for (let i = 0; i < this.commentsOld.length; i++) {
-      var comment:Comment = this.commentsOld[i];
-      this.deleteComment(comment.id, 1);
+    if (this.recipeOld.comments.length !== 0) {
+      for (let i = 0; i < this.recipeOld.comments.length; i++) {
+        var comment:Comment = this.recipeOld.comments[i];
+        this.deleteComment(comment.id, 1);
+      }
+    } else{
+      console.log("There are not comments that delete",this.commentsOld);
     }
   }
 
   deleteOneComment(id:number) :void{
+    console.log("id",id);
     this.deleteComment(id, 2);
   }
 
@@ -319,10 +329,23 @@ export class EditRecipeComponent implements OnInit {
 
   
   deleteOldKeywords() :void{
+    if (this.recipeOld.keywords.length !== 0) {
+      for (let i = 0; i < this.recipeOld.keywords.length; i++) {
+        var keyword:Keyword = this.recipeOld.keywords[i];
+        this.deleteKeyword(keyword.id, 1);
+      }
+    } else{
+      console.log("There are not keywords that delete",this.commentsOld);
+    }
+
+/*
     for (let i = 0; i < this.keywordsOld.length; i++) {
+      
       var keyword:Keyword = this.keywordsOld[i];
+      console.log("keyword",keyword);
       this.deleteKeyword(keyword.id, 1);
     }
+    */
   }
 
   deleteKeyword(id:number, type:number) : void {
@@ -334,6 +357,22 @@ export class EditRecipeComponent implements OnInit {
           });
           this.ngOnInit();
         }
+      },
+      err => {
+        console.log("ERROR",err.error.mensaje);
+      }
+    );  
+  }
+
+  cleanKeyword() : void {
+    this.keywordService.clean().subscribe(
+      data => {
+        /*
+          this.toastr.success('Keyword deleted', 'OK', {
+            timeOut: 3000, positionClass: 'toast-top-center'
+          });
+          this.ngOnInit();
+          */
       },
       err => {
         console.log("ERROR",err.error.mensaje);

@@ -8,7 +8,8 @@ import { Observable } from 'rxjs';
 })
 export class RoleService {
 
-  url = 'http://localhost:8080/role/';
+  url = 'https://localhost:8443/role/';
+ // url = 'http://localhost:8080/role/';
 
   constructor(private httpClient: HttpClient) { }
 

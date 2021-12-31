@@ -8,12 +8,17 @@ import { Observable } from 'rxjs';
 })
 export class KeywordService {
 
-  url = 'http://localhost:8080/keyword/';
+  url = 'https://localhost:8443/keyword/';
+  // url = 'http://localhost:8080/keyword/';
 
   constructor(private httpClient: HttpClient) { }
 
   public list(): Observable<Keyword[]> {
     return this.httpClient.get<Keyword[]>(this.url + 'list');
+  }
+  
+  public listDistinct(): Observable<Keyword[]> {
+    return this.httpClient.get<Keyword[]>(this.url + 'listdistinct');
   }
 
   public detail(id: number): Observable<Keyword> {
@@ -26,6 +31,10 @@ export class KeywordService {
 
   public delete(id: number): Observable<any> {
     return this.httpClient.delete<any>(this.url + `delete/${id}`);
+  }
+
+  public clean(): Observable<any> {
+    return this.httpClient.delete<any>(this.url + `clean`);
   }
   
 }
